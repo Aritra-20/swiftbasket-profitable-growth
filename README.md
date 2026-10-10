@@ -7,8 +7,8 @@ My submission for the Straive campus case study #1 (Senior Business Analyst / Co
 ## What I found
 
 - **Unit economics.** An average order earns about ₹167 in product margin and fees. Discounts (₹45) and refunds (₹21) take ₹66 of it. We keep ₹44, which is 7.9% of GMV, and one order in five loses money.
-- **Discount-led customers.** Customers who rely on discounts repeat just as often as everyone else, but earn ₹15 per order against ₹74 for light-discount customers. Bigger first-order offers and marketing clicks show no link to repeat buying. App habit does.
-- **The busiest customers.** The COO suspected they might be the least profitable. In this data they are the most profitable.
+- **Discount-led customers.** Customers who rely on discounts repeat more (43% vs 23%), but earn ₹15 per order against ₹74 for light-discount customers. Bigger first-order offers and marketing clicks show no link to repeat buying. App habit does.
+- **The busiest customers.** The COO suspected they might be the least profitable. She's half right: per order, the busiest fifth earns the least (₹36 vs ₹57 for one-order customers), because they get the deepest discounts (9.3% of basket vs 5.9%). In total they still bring the most margin (₹370 each), so the fix is to stop discounting them, not to lose them.
 - **Delivery promise.** The 20/25/30-minute promise is given in the same mix at every distance. A 20-minute promise beyond 4 km is late 72% of the time. In rain at peak hours, 47% of orders are late.
 - **Stock accuracy.** Wrong stock records lead to stock-outs, stock-outs to refunds, and refunds to lost margin. Store margin per order correlates 0.77 with inventory accuracy.
 - **The Q1 promo (randomized).** It lost ₹12.5 of margin per customer against control. The customers who redeemed most were the ones it hurt most. Only free delivery for lapsed, low-engagement customers paid back: +₹8.3 per customer, 95% CI +₹1 to +₹16, and the result held on a holdout half.
@@ -31,6 +31,7 @@ My submission for the Straive campus case study #1 (Senior Business Analyst / Co
 | `dashboard/` | Source and aggregate data behind the business-health dashboard |
 | `exports/` | Aggregate tables, in case you want to rebuild the dashboard in Tableau or Power BI |
 | `presentation/video_script.md` | The 5-minute video script, with timings and a recording checklist |
+| `qa/independent_check.py` | Re-derives every number used in the slides straight from the Excel file, in plain pandas with no SQL |
 
 The raw case workbook is **not** in this repo. The case README says it's for the hiring exercise only.
 
@@ -55,7 +56,10 @@ jupyter notebook notebooks/swiftbasket_analysis.ipynb
 
 I used Claude (an AI assistant) to help with the analysis code (Python and SQL), the charts and the slide drafts. I reviewed each step and I'm responsible for every number and recommendation.
 
-To check the output, I re-computed the headline figures in plain pandas, separately from the SQL, in section 7 of the notebook: CM per order, discount share, late rate and campaign uplift all match. I also confirmed that the contribution-margin formula reconciles to the rupee on all 30,000 orders.
+To check the output:
+- Section 7 of the notebook re-computes the headline figures in plain pandas, separately from the SQL. They match.
+- `qa/independent_check.py` reads the Excel file fresh and re-derives every number used in the slides, including the confidence intervals and the holdout check. They match.
+- The contribution-margin formula reconciles to the rupee on all 30,000 orders.
 
 ## Outside sources used for context
 

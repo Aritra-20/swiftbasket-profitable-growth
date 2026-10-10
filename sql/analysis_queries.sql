@@ -103,9 +103,18 @@ FROM cust WHERE n_orders > 0 GROUP BY 1,2
 ORDER BY 1,2;
 
 -- Are the busiest customers the least profitable? (the COO's hypothesis)
-SELECT NTILE(5) OVER (ORDER BY n_orders, customer_id) AS frequency_quintile, n_orders, cm,
-       CASE WHEN cm < 0 THEN 1 ELSE 0 END AS loss_customer
-FROM cust WHERE n_orders > 0;
+WITH q AS (
+  SELECT customer_id, n_orders, cm, NTILE(5) OVER (ORDER BY n_orders, customer_id) AS frequency_quintile
+  FROM cust WHERE n_orders > 0)
+SELECT q.frequency_quintile,
+       COUNT(DISTINCT q.customer_id)                                   AS customers,
+       COUNT(*) * 1.0 / COUNT(DISTINCT q.customer_id)                  AS avg_orders,
+       SUM(o.contribution_margin_inr) / COUNT(DISTINCT q.customer_id)  AS cm_per_customer,
+       AVG(o.contribution_margin_inr)                                  AS cm_per_order,
+       SUM(o.discount_inr) / SUM(o.basket_value_inr)                   AS discount_share,
+       (SELECT AVG(CASE WHEN q2.cm < 0 THEN 1 ELSE 0 END) FROM q q2 WHERE q2.frequency_quintile = q.frequency_quintile) AS share_loss_making
+FROM q JOIN orders o USING (customer_id)
+GROUP BY 1 ORDER BY 1;
 
 -- The delivery promise ignores distance
 SELECT CASE WHEN delivery_distance_km <= 1 THEN '0–1 km' WHEN delivery_distance_km <= 2 THEN '1–2 km'
