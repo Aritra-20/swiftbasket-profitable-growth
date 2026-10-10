@@ -1,0 +1,314 @@
+<style>
+#dash-root .sb { display: grid; gap: var(--cds-gap-lg); font-family: var(--font-anthropic-sans); }
+#dash-root .sb-head h1 { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); margin: 0 0 var(--cds-gap-xs); text-wrap: balance; }
+#dash-root .sb-head p { margin: 0; color: var(--color-fg-muted); font-size: var(--cds-font-size-body); max-width: 70ch; }
+#dash-root .sb-tiles { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 10rem), 1fr)); }
+#dash-root .sb-tile { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-md); display: grid; gap: var(--cds-gap-xs); }
+#dash-root .sb-tile .lab { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+#dash-root .sb-tile .val { font-family: var(--font-anthropic-serif); font-weight: 400; font-size: var(--cds-font-size-title); font-variant-numeric: tabular-nums; }
+#dash-root .sb-tile .note { font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+#dash-root .sb-tile.alert .val { color: var(--color-bad); }
+#dash-root .sb-grid { display: grid; gap: var(--cds-gap-md); grid-template-columns: repeat(auto-fit, minmax(min(100%, 24rem), 1fr)); }
+#dash-root .sb-card { background: var(--color-panel); border: 1px solid var(--color-border-line); border-radius: var(--cds-radius); padding: var(--cds-pad-lg); min-width: 0; display: grid; gap: var(--cds-gap-sm); align-content: start; }
+#dash-root .sb-card h2 { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: 0; text-wrap: balance; }
+#dash-root .sb-card .sub { margin: 0; font-size: var(--cds-font-size-caption); color: var(--color-fg-muted); }
+#dash-root .sb-chart { position: relative; min-height: 260px; }
+#dash-root .sb-chart.short { min-height: 190px; }
+#dash-root .sb-section { font-size: var(--cds-font-size-heading); font-weight: var(--cds-font-weight-medium); margin: var(--cds-gap-sm) 0 0; }
+#dash-root .sb-tip { position: absolute; background: var(--cds-surface-popover); border: 1px solid var(--cds-border); border-radius: var(--cds-radius); box-shadow: var(--cds-shadow-popover); padding: var(--cds-pad-xs) var(--cds-pad-sm); font-size: var(--cds-font-size-caption); pointer-events: none; white-space: nowrap; z-index: 2; }
+#dash-root .sb-tip .k { color: var(--cds-text-secondary); }
+#dash-root .sb-tablewrap { max-height: 26rem; overflow: auto; }
+#dash-root table.sb-t { width: 100%; border-collapse: collapse; font-size: var(--cds-font-size-caption); font-variant-numeric: tabular-nums; }
+#dash-root table.sb-t th { position: sticky; top: 0; background: var(--color-panel); text-align: right; padding: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); font-weight: var(--cds-font-weight-medium); }
+#dash-root table.sb-t th button { all: unset; cursor: pointer; }
+#dash-root table.sb-t th button:focus-visible { outline: 2px solid var(--color-fg); }
+#dash-root table.sb-t td { text-align: right; padding: var(--cds-pad-xs); border-bottom: 1px solid var(--color-border-line); }
+#dash-root table.sb-t th:first-child, #dash-root table.sb-t td:first-child { text-align: left; }
+#dash-root .bar { display: inline-block; height: 0.5rem; border-radius: 4px; vertical-align: middle; margin-right: 0.4rem; }
+#dash-root .sb-t .low { color: var(--color-bad); }
+#dash-root [data-dash-source-state=empty] { color: transparent; }
+#dash-root [data-dash-source-state=refreshing] { opacity: .5; transition: opacity var(--cds-dur-slow); }
+#dash-root .sb-fail { display: flex; align-items: center; justify-content: center; gap: .4rem; min-height: inherit; color: var(--color-fg-muted); font-size: var(--cds-font-size-caption); }
+#dash-root .sb-fail::before { content: ""; width: .375rem; height: .375rem; border-radius: 50%; background: var(--color-bad); }
+</style>
+
+<div class="sb">
+  <header class="sb-head" id="top">
+    <h1>SwiftBasket business health</h1>
+    <p id="takeaway">Each order keeps <b class="dash-skeleton" data-source="kpi" data-field="value" data-where="metric=cm_per_order">—</b> of contribution margin. Discounts (<b class="dash-skeleton" data-source="kpi" data-field="value" data-where="metric=discount_pct_gmv">—</b> of GMV) and refunds (<b class="dash-skeleton" data-source="kpi" data-field="value" data-where="metric=refund_pct_gmv">—</b>) take more than that, so the fixes are discount targeting, stock accuracy and honest delivery promises. Data: 2025 order sample, synthetic case data.</p>
+  </header>
+
+  <section class="sb-tiles" id="tiles">
+    <div class="sb-tile"><span class="lab">Contribution margin per order</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=cm_per_order">—</span><span class="note">2025, all orders</span></div>
+    <div class="sb-tile"><span class="lab">CM as % of GMV</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=cm_pct_gmv">—</span><span class="note">before fixed costs</span></div>
+    <div class="sb-tile alert"><span class="lab">Discounts, % of GMV</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=discount_pct_gmv">—</span><span class="note">about equal to all CM</span></div>
+    <div class="sb-tile alert"><span class="lab">Refunds, % of GMV</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=refund_pct_gmv">—</span><span class="note">mostly after stock-outs</span></div>
+    <div class="sb-tile"><span class="lab">Late deliveries</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=late_rate">—</span><span class="note">vs promised minutes</span></div>
+    <div class="sb-tile"><span class="lab">Orders with a stock-out</span><span class="val dash-skeleton" data-source="kpi" data-field="value" data-where="metric=stockout_order_share">—</span><span class="note">at least one item missing</span></div>
+  </section>
+
+  <h2 class="sb-section" id="money">Where the money goes</h2>
+  <div class="sb-grid">
+    <article class="sb-card" id="card-unit">
+      <h2>Average order, gross margin to contribution margin</h2>
+      <p class="sub">₹ per order. Orange steps are the ones we control with policy.</p>
+      <div class="sb-chart" id="chart-unit" data-source="unit"></div>
+    </article>
+    <article class="sb-card" id="card-monthly">
+      <h2>Month by month</h2>
+      <p class="sub">Margin per order is flat; lateness rises in the June to September monsoon.</p>
+      <div class="sb-chart short" id="chart-cm" data-source="monthly"></div>
+      <div class="sb-chart short" id="chart-late" data-source="monthly"></div>
+    </article>
+  </div>
+
+  <h2 class="sb-section" id="ops">Operations</h2>
+  <div class="sb-grid">
+    <article class="sb-card" id="card-promise">
+      <h2>Late rate by distance and promised time</h2>
+      <p class="sub">The same promise mix is shown at every distance, so long trips with a 20-minute promise usually fail.</p>
+      <div class="sb-chart" id="chart-promise" data-source="promise"></div>
+    </article>
+    <article class="sb-card" id="card-stores">
+      <h2>Store league table</h2>
+      <p class="sub">Sorted by margin per order. Inventory accuracy under 90% is flagged. Click a header to sort.</p>
+      <div class="sb-tablewrap">
+        <table class="sb-t" id="tbl-stores" data-source="stores" data-row-key="store_id">
+          <thead><tr>
+            <th data-field="store_id"><button data-k="store_id">Store</button></th>
+            <th data-field="city"><button data-k="city">City</button></th>
+            <th data-field="cm_per_order"><button data-k="cm_per_order">CM / order</button></th>
+            <th data-field="inventory_accuracy_pct"><button data-k="inventory_accuracy_pct">Inv. accuracy</button></th>
+            <th data-field="refund_per_order"><button data-k="refund_per_order">Refund / order</button></th>
+            <th data-field="late_rate"><button data-k="late_rate">Late</button></th>
+            <th data-field="rating"><button data-k="rating">Rating</button></th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+
+  <h2 class="sb-section" id="promo">Q1 promotion (randomized test)</h2>
+  <div class="sb-grid">
+    <article class="sb-card" id="card-seg">
+      <h2>Redemption rewards the wrong customers</h2>
+      <p class="sub">Left: share of treated customers who redeemed. Right: margin per customer vs the control group, all offers.</p>
+      <div class="sb-chart" id="chart-seg" data-source="segments"></div>
+    </article>
+    <article class="sb-card" id="card-offers">
+      <h2>By offer type</h2>
+      <p class="sub">Every offer was redeemed at about the same rate. Only free delivery came close to breaking even.</p>
+      <div class="sb-tablewrap">
+        <table class="sb-t" id="tbl-offers" data-source="offers" data-row-key="offer_type">
+          <thead><tr>
+            <th data-field="offer_type">Offer</th>
+            <th data-field="offer_value_inr">Value</th>
+            <th data-field="redemption_rate">Redeemed</th>
+            <th data-field="incremental_orders">Extra orders</th>
+            <th data-field="incremental_margin">Margin vs control</th>
+          </tr></thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </article>
+  </div>
+</div>
+
+<script>
+(function () {
+  const inr = (v, d = 0) => (v < 0 ? "−₹" : "₹") + Math.abs(v).toFixed(d);
+  const pct = d3.format(".1%"), pct0 = d3.format(".0%");
+  const num = (rows, cols) => rows.map(r => { const o = { ...r }; cols.forEach(c => o[c] = Number(r[c])); return o; });
+  const css = (n) => getComputedStyle(document.getElementById("dash-root")).getPropertyValue(n).trim();
+  let storeSort = { k: "cm_per_order", asc: true };
+
+  function failOrWait(el, st) {
+    el.innerHTML = "";
+    if (st === "error" || st === "connect" || st === "declined" || st === "missing") {
+      const d = document.createElement("div"); d.className = "sb-fail"; d.textContent = "Failed to load"; el.appendChild(d);
+    }
+  }
+  function tipFor(box) {
+    let t = box.querySelector(".sb-tip");
+    if (!t) { t = document.createElement("div"); t.className = "sb-tip"; t.hidden = true; box.appendChild(t); }
+    return t;
+  }
+  function showTip(box, t, ev, lines) {
+    t.replaceChildren(); lines.forEach((l, i) => { const s = document.createElement("div"); if (i === 0) s.className = "k"; s.textContent = l; t.appendChild(s); });
+    t.hidden = false;
+    const r = box.getBoundingClientRect(); let x = ev.clientX - r.left + 12, y = ev.clientY - r.top + 12;
+    if (x + t.offsetWidth > r.width) x = Math.max(0, ev.clientX - r.left - t.offsetWidth - 12);
+    t.style.left = x + "px"; t.style.top = y + "px";
+  }
+  function svgIn(el, h) {
+    el.innerHTML = ""; const w = Math.max(280, el.clientWidth);
+    const svg = d3.select(el).append("svg").attr("width", "100%").attr("viewBox", `0 0 ${w} ${h}`).attr("font-size", 12);
+    return { svg, w };
+  }
+  function styleAxis(g) {
+    g.attr("font-size", null).attr("font-family", null);
+    g.selectAll("text").attr("fill", "var(--color-fg-muted)");
+    g.selectAll(".domain").attr("stroke", "var(--cds-chart-axis)");
+    g.selectAll(".tick line").attr("stroke", "var(--cds-chart-grid)");
+  }
+
+  dash.onData(() => {
+    // ---- KPIs
+    const k = dash.data("kpi");
+    document.querySelectorAll('[data-source="kpi"]').forEach(el => {
+      if (k.status !== "ok") { if (k.status !== "loading") el.classList.remove("dash-skeleton"); el.textContent = "—"; return; }
+      el.classList.remove("dash-skeleton");
+      const m = el.getAttribute("data-where").split("=")[1];
+      const row = k.data.find(r => r.metric === m); if (!row) { el.textContent = "—"; return; }
+      const v = Number(row.value);
+      el.textContent = row.unit === "inr" ? inr(v) : row.unit === "pct" ? pct(v) : d3.format(",")(v);
+    });
+
+    // ---- Unit economics waterfall
+    const ue = dash.data("unit"), elU = document.getElementById("chart-unit");
+    if (ue.status !== "ok") failOrWait(elU, ue.status); else {
+      const rows = num(ue.data, ["value"]); const { svg, w } = svgIn(elU, 260);
+      const m = { t: 18, r: 8, b: 40, l: 36 };
+      const x = d3.scaleBand(rows.map(r => r.step), [m.l, w - m.r]).padding(0.28);
+      let run = 0; const segs = rows.map((r, i) => {
+        if (i === rows.length - 1) return { ...r, y0: 0, y1: r.value, kind: "total" };
+        const s = { ...r, y0: r.value >= 0 ? run : run + r.value, y1: r.value >= 0 ? run + r.value : run };
+        s.kind = r.value >= 0 ? "plus" : (r.step === "Discounts" || r.step === "Refunds" ? "policy" : "cost"); run += r.value; return s;
+      });
+      const y = d3.scaleLinear([0, d3.max(segs, s => s.y1) * 1.12], [260 - m.b, m.t]);
+      styleAxis(svg.append("g").attr("transform", `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickSize(-(w - m.l - m.r))).call(g => g.select(".domain").remove()));
+      const xa = svg.append("g").attr("transform", `translate(0,${260 - m.b})`).call(d3.axisBottom(x).tickSize(0)); styleAxis(xa);
+      xa.selectAll("text").attr("dy", "1em").each(function (d) { const t = d3.select(this), words = d.split(" "); if (words.length > 1 && x.bandwidth() < 70) { t.text(null); words.slice(0, 2).forEach((wd, i) => t.append("tspan").attr("x", 0).attr("dy", i ? "1.1em" : "1em").text(i === 1 ? words.slice(1).join(" ") : wd)); } });
+      const col = { plus: dash.colors[0], policy: dash.colors[1], cost: "var(--cds-chart-muted)", total: dash.colors[2] };
+      const box = elU, tip = tipFor(box);
+      svg.selectAll("rect.s").data(segs).join("rect").attr("x", s => x(s.step)).attr("width", x.bandwidth())
+        .attr("y", s => y(s.y1)).attr("height", s => Math.max(1, y(s.y0) - y(s.y1))).attr("rx", 4).attr("fill", s => col[s.kind])
+        .on("mousemove", (ev, s) => showTip(box, tip, ev, [s.step, inr(s.value, 1) + " per order"])).on("mouseleave", () => tip.hidden = true);
+      svg.selectAll("text.v").data(segs).join("text").attr("x", s => x(s.step) + x.bandwidth() / 2).attr("y", s => y(s.y1) - 5)
+        .attr("text-anchor", "middle").attr("fill", "var(--color-fg)").text(s => (s.kind === "total" ? "" : s.value >= 0 ? "+" : "") + inr(s.value));
+    }
+
+    // ---- Monthly small lines
+    const mo = dash.data("monthly");
+    [["chart-cm", "cm_per_order", "CM per order", v => inr(v, 1), 0], ["chart-late", "late_rate", "Late-delivery rate", pct, 1]].forEach(([id, col, name, fmt, ci]) => {
+      const el = document.getElementById(id);
+      if (mo.status !== "ok") { failOrWait(el, mo.status); return; }
+      const rows = num(mo.data, [col]).map(r => ({ ...r, d: new Date(r.month + "-01T00:00:00Z") }));
+      const { svg, w } = svgIn(el, 190); const m = { t: 22, r: 70, b: 22, l: 40 };
+      const x = d3.scaleUtc(d3.extent(rows, r => r.d), [m.l, w - m.r]);
+      const y = d3.scaleLinear([0, d3.max(rows, r => r[col]) * 1.2], [190 - m.b, m.t]);
+      styleAxis(svg.append("g").attr("transform", `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(3).tickFormat(col === "late_rate" ? pct0 : d => "₹" + d).tickSize(-(w - m.l - m.r))).call(g => g.select(".domain").remove()));
+      styleAxis(svg.append("g").attr("transform", `translate(0,${190 - m.b})`).call(d3.axisBottom(x).ticks(w < 420 ? 4 : 6).tickFormat(d3.utcFormat("%b"))));
+      svg.append("text").attr("x", m.l).attr("y", 12).attr("fill", "var(--color-fg-muted)").text(name);
+      svg.append("path").datum(rows).attr("fill", "none").attr("stroke", dash.colors[ci]).attr("stroke-width", 2).attr("stroke-linejoin", "round").attr("stroke-linecap", "round")
+        .attr("d", d3.line().x(r => x(r.d)).y(r => y(r[col])));
+      const last = rows[rows.length - 1];
+      svg.append("circle").attr("cx", x(last.d)).attr("cy", y(last[col])).attr("r", 4).attr("fill", dash.colors[ci]);
+      svg.append("text").attr("x", x(last.d) + 8).attr("y", y(last[col]) + 4).attr("fill", "var(--color-fg)").text(fmt(last[col]));
+      const tip = tipFor(el), dot = svg.append("circle").attr("r", 4).attr("fill", dash.colors[ci]).attr("visibility", "hidden");
+      svg.append("rect").attr("x", m.l).attr("y", m.t).attr("width", w - m.l - m.r).attr("height", 190 - m.t - m.b).attr("fill", "transparent")
+        .on("mousemove", ev => { const [px] = d3.pointer(ev); const i = d3.leastIndex(rows, r => Math.abs(x(r.d) - px)); const r = rows[i];
+          dot.attr("cx", x(r.d)).attr("cy", y(r[col])).attr("visibility", "visible"); showTip(el, tip, ev, [d3.utcFormat("%B %Y")(r.d), fmt(r[col])]); })
+        .on("mouseleave", () => { tip.hidden = true; dot.attr("visibility", "hidden"); });
+    });
+
+    // ---- Promise vs distance
+    const pr = dash.data("promise"), elP = document.getElementById("chart-promise");
+    if (pr.status !== "ok") failOrWait(elP, pr.status); else {
+      const rows = num(pr.data, ["promised_minutes", "late_rate", "orders"]);
+      const bands = [...new Set(rows.map(r => r.distance_band))];
+      const { svg, w } = svgIn(elP, 260); const m = { t: 14, r: 92, b: 28, l: 40 };
+      const x = d3.scalePoint(bands, [m.l, w - m.r]).padding(0.2);
+      const y = d3.scaleLinear([0, 0.8], [260 - m.b, m.t]);
+      styleAxis(svg.append("g").attr("transform", `translate(${m.l},0)`).call(d3.axisLeft(y).ticks(4).tickFormat(pct0).tickSize(-(w - m.l - m.r))).call(g => g.select(".domain").remove()));
+      styleAxis(svg.append("g").attr("transform", `translate(0,${260 - m.b})`).call(d3.axisBottom(x).tickSize(0)));
+      const series = [[20, "var(--cds-chart-status-critical)"], [25, dash.colors[3]], [30, dash.colors[0]]];
+      const tip = tipFor(elP);
+      const ends = series.map(([mins, c]) => {
+        const s = rows.filter(r => r.promised_minutes === mins);
+        svg.append("path").datum(s).attr("fill", "none").attr("stroke", c).attr("stroke-width", 2).attr("stroke-linecap", "round").attr("stroke-linejoin", "round").attr("d", d3.line().x(r => x(r.distance_band)).y(r => y(r.late_rate)));
+        svg.selectAll(null).data(s).join("circle").attr("cx", r => x(r.distance_band)).attr("cy", r => y(r.late_rate)).attr("r", 4.5).attr("fill", c)
+          .on("mousemove", (ev, r) => showTip(elP, tip, ev, [`${r.distance_band}, ${mins}-min promise`, `${pct(r.late_rate)} late · ${d3.format(",")(r.orders)} orders`])).on("mouseleave", () => tip.hidden = true);
+        const l = s[s.length - 1]; return { mins, c, yv: y(l.late_rate), v: l.late_rate, xv: x(l.distance_band) };
+      });
+      ends.sort((a, b) => a.yv - b.yv); for (let i = 1; i < ends.length; i++) if (ends[i].yv - ends[i - 1].yv < 14) ends[i].yv = ends[i - 1].yv + 14;
+      ends.forEach(e => svg.append("text").attr("x", e.xv + 8).attr("y", e.yv + 4).attr("fill", "var(--color-fg)").text(`${e.mins} min · ${pct0(e.v)}`));
+    }
+
+    drawStores();
+
+    // ---- Campaign segments
+    drawSegmentsAndOffers();
+  });
+
+  function drawStores() {
+    const so = dash.data("stores"), tb = document.querySelector("#tbl-stores tbody");
+    tb.replaceChildren();
+    if (so.status === "ok") {
+      const rows = num(so.data, ["cm_per_order", "inventory_accuracy_pct", "refund_per_order", "late_rate", "rating"]);
+      const s = storeSort; rows.sort((a, b) => { const va = a[s.k], vb = b[s.k]; return (va < vb ? -1 : va > vb ? 1 : 0) * (s.asc ? 1 : -1); });
+      document.querySelectorAll("#tbl-stores th").forEach(th => th.setAttribute("aria-sort", th.dataset.field === s.k ? (s.asc ? "ascending" : "descending") : "none"));
+      const maxCm = d3.max(rows, r => r.cm_per_order);
+      rows.forEach(r => {
+        const tr = document.createElement("tr");
+        const cells = [r.store_id, r.city, null, r.inventory_accuracy_pct.toFixed(1) + "%", inr(r.refund_per_order, 1), pct0(r.late_rate), r.rating.toFixed(2)];
+        cells.forEach((c, i) => {
+          const td = document.createElement("td");
+          if (i === 2) { const b = document.createElement("span"); b.className = "bar"; b.style.width = (3 * r.cm_per_order / maxCm) + "rem"; b.style.background = dash.colors[2]; td.appendChild(b); td.appendChild(document.createTextNode(inr(r.cm_per_order, 1))); }
+          else td.textContent = c;
+          if (i === 3 && r.inventory_accuracy_pct < 90) td.className = "low";
+          tr.appendChild(td);
+        });
+        tb.appendChild(tr);
+      });
+    }
+  }
+
+  function drawSegmentsAndOffers() {
+    const sg = dash.data("segments"), elS = document.getElementById("chart-seg");
+    if (sg.status !== "ok") failOrWait(elS, sg.status); else {
+      const rows = num(sg.data, ["redemption_rate", "margin_uplift_all_offers", "customers"]);
+      const { svg, w } = svgIn(elS, 260); const lw = Math.min(150, w * 0.32), gap = 18, half = (w - lw - gap) / 2;
+      const yb = d3.scaleBand(rows.map(r => r.segment), [16, 250]).padding(0.35);
+      const x1 = d3.scaleLinear([0, 0.5], [lw, lw + half - 30]);
+      const ext = d3.max(rows, r => Math.abs(r.margin_uplift_all_offers)) * 1.15;
+      const x2 = d3.scaleLinear([-ext, ext], [lw + half + gap, w - 4]);
+      svg.append("text").attr("x", lw).attr("y", 10).attr("fill", "var(--color-fg-muted)").text("Redeemed");
+      svg.append("text").attr("x", lw + half + gap).attr("y", 10).attr("fill", "var(--color-fg-muted)").text("Margin vs control");
+      svg.append("line").attr("x1", x2(0)).attr("x2", x2(0)).attr("y1", 16).attr("y2", 250).attr("stroke", "var(--cds-chart-reference)");
+      const tip = tipFor(elS);
+      rows.forEach(r => {
+        const yy = yb(r.segment), bh = yb.bandwidth(); const [a, b] = r.segment.split(" · ");
+        const lab = svg.append("text").attr("x", 0).attr("y", yy + bh / 2 - 2).attr("fill", "var(--color-fg)");
+        lab.append("tspan").attr("x", 0).text(a); lab.append("tspan").attr("x", 0).attr("dy", "1.15em").attr("fill", "var(--color-fg-muted)").text(b);
+        svg.append("rect").attr("x", x1(0)).attr("y", yy).attr("height", bh).attr("width", x1(r.redemption_rate) - x1(0)).attr("rx", 4).attr("fill", dash.colors[0])
+          .on("mousemove", ev => showTip(elS, tip, ev, [r.segment, pct(r.redemption_rate) + " redeemed"])).on("mouseleave", () => tip.hidden = true);
+        svg.append("text").attr("x", x1(r.redemption_rate) + 4).attr("y", yy + bh / 2 + 4).attr("fill", "var(--color-fg)").text(pct0(r.redemption_rate));
+        const v = r.margin_uplift_all_offers;
+        svg.append("rect").attr("x", Math.min(x2(0), x2(v))).attr("y", yy).attr("height", bh).attr("width", Math.abs(x2(v) - x2(0))).attr("rx", 4)
+          .attr("fill", v < 0 ? "var(--cds-chart-status-critical)" : dash.colors[2])
+          .on("mousemove", ev => showTip(elS, tip, ev, [r.segment, inr(v, 1) + " per customer"])).on("mouseleave", () => tip.hidden = true);
+        svg.append("text").attr("x", v < 0 ? x2(v) - 4 : x2(v) + 4).attr("y", yy + bh / 2 + 4).attr("text-anchor", v < 0 ? "end" : "start").attr("fill", "var(--color-fg)").text((v >= 0 ? "+" : "") + inr(v));
+      });
+    }
+
+    // ---- Offers table
+    const of = dash.data("offers"), to = document.querySelector("#tbl-offers tbody");
+    to.replaceChildren();
+    if (of.status === "ok") {
+      num(of.data, ["offer_value_inr", "redemption_rate", "incremental_orders", "incremental_margin"]).forEach(r => {
+        const tr = document.createElement("tr");
+        [r.offer_type, inr(r.offer_value_inr), pct0(r.redemption_rate), "+" + r.incremental_orders.toFixed(2), inr(r.incremental_margin, 1)].forEach((c, i) => {
+          const td = document.createElement("td"); td.textContent = c; if (i === 4 && r.incremental_margin < 0) td.className = "low"; tr.appendChild(td); });
+        to.appendChild(tr);
+      });
+    }
+  }
+
+  document.querySelectorAll("#tbl-stores th button").forEach(b => b.addEventListener("click", () => {
+    const k = b.dataset.k; storeSort = { k, asc: storeSort.k === k ? !storeSort.asc : true };
+    drawStores();
+  }));
+})();
+</script>

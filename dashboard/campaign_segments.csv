@@ -1,0 +1,5 @@
+segment,customers,redemption_rate,margin_uplift_all_offers,margin_uplift_free_delivery
+Active ≤90d · high engagement,2748,0.4161,-25.84,-13.72
+Active ≤90d · low engagement,1534,0.2826,-11.02,3.49
+Lapsed >90d · high engagement,1112,0.3059,-13.65,-4.16
+Lapsed >90d · low engagement,2606,0.241,1.49,8.28
