@@ -2,7 +2,7 @@
 
 Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the code that produces it.
 
-Result: **121 of 121 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **130 of 130 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
 
 Two definitions to know:
 - "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
@@ -13,7 +13,7 @@ Two definitions to know:
 
 Things that are *not* from the case data, and are labelled where they appear:
 - Outlook Business, 13 Jan 2026: Blinkit, Zepto and others dropped "10-minute delivery" claims (slide 5, notebook Step 6).
-- Datum Intelligence, Jun 2026: Blinkit's contribution margin (notebook Step 6 only).
+- Datum Intelligence, Jun 2026: Blinkit's contribution margin rose from 3.9% to 5.4% of net order value (slide 3 footer, notebook Step 6).
 
 Estimates (not measured facts) are the three action effects on slide 8. They're simple arithmetic on the 2025 data, shown in notebook Step 6, and the pilots decide the real number.
 
@@ -27,6 +27,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | First order | Jan 2025 | Jan 2025 | Step 1 · time period | ✓ |
 | Last order | Dec 2025 | Dec 2025 | Step 1 · time period | ✓ |
 | Discounts + refunds per order (₹66) | 66 | 66.11 | Step 2 · where the money goes | ✓ |
+| % late, all 20-minute promises (40%) | 40 | 40.41 | Step 4 · promise | ✓ |
 
 ## Slide 3 · Business health
 
@@ -70,10 +71,10 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Discount per order, 11+ order customers (₹) | 57 | 56.82 | Step 3 · frequent customers | ✓ |
 | Margin per order, 1-order customers (₹) | 57 | 56.64 | Step 3 · frequent customers | ✓ |
 | Margin per order, 11+ order customers (₹) | 32 | 32.1 | Step 3 · frequent customers | ✓ |
-| Repeat %, discount-heavy customers (>11% of spend) | 43 | 43.34 | Step 9.3 · discount reliance | ✓ |
-| Repeat %, light-discount customers (≤5%) | 23 | 23.12 | Step 9.3 · discount reliance | ✓ |
-| Margin per order, discount-heavy customers (₹) | 15 | 14.74 | Step 9.3 · discount reliance | ✓ |
-| Margin per order, light-discount customers (₹) | 74 | 74.08 | Step 9.3 · discount reliance | ✓ |
+| Orders per customer, discount-heavy (>11% of spend) | 6.1 | 6.09 | Step 8.3 · discount reliance | ✓ |
+| Orders per customer, light-discount (≤5%) | 2.7 | 2.65 | Step 8.3 · discount reliance | ✓ |
+| Margin per order (all their orders), discount-heavy (₹) | 21 | 20.84 | Step 8.3 · discount reliance | ✓ |
+| Margin per order (all their orders), light-discount (₹) | 70 | 69.55 | Step 8.3 · discount reliance | ✓ |
 | Margin per customer per year, 11+ order customers (₹) | 427 | 427.45 | Step 3 · frequent customers | ✓ |
 | Repeat rate, lowest group by membership/channel/first offer (29%) | 29 | 29.28 | Step 3 · repeat rates | ✓ |
 | Repeat rate, highest group by membership/channel/first offer (33%) | 33 | 32.8 | Step 3 · repeat rates | ✓ |
@@ -87,6 +88,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Avg distance, 20-min promise (km) | 2.5 | 2.5 | Step 4 · promise | ✓ |
 | Avg distance, 25-min promise (km) | 2.5 | 2.52 | Step 4 · promise | ✓ |
 | Avg distance, 30-min promise (km) | 2.5 | 2.52 | Step 4 · promise | ✓ |
+| Actual delivery minutes, same for every promise (~19) | 19 | 18.93 | Step 6 · rec 2 | ✓ |
 | % late, 20-min promise over 4 km | 72.5 | 72.5 | Step 4 · distance x promise | ✓ |
 | % late, rain at peak hours | 47.5 | 47.47 | Step 4 · weather and peak | ✓ |
 | % late, 'Normal' weather off-peak | 6.9 | 6.9 | Step 4 · weather and peak | ✓ |
@@ -101,6 +103,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 |---|---|---|---|---|
 | Avg refund, nothing missing, delivered orders (₹) | 0 | 0 | Step 4 · missing items | ✓ |
 | Delivered orders with a missing item (2 in 3) | 65 | 64.61 | Step 4 · missing items | ✓ |
+| Delivered orders with an item not replaced (1 in 3) | 36 | 35.92 | Step 4 · missing items | ✓ |
 | Avg refund, 1 item missing (₹) | 28 | 27.66 | Step 4 · missing items | ✓ |
 | Avg refund, 3+ items missing (₹) | 27 | 27.42 | Step 4 · missing items | ✓ |
 | Rating, nothing missing | 4.95 | 4.95 | Step 4 · missing items | ✓ |
@@ -130,26 +133,30 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Margin per customer, no offer (₹) | 78.8 | 78.82 | Step 5 · treatment vs control | ✓ |
 | Promo effect per customer (₹) | -12.5 | -12.46 | Step 6 · rec 1 | ✓ |
 | % redeemed among active customers who got an offer (~37%) | 37 | 36.79 | Step 5 · active vs lapsed | ✓ |
-| Everyone else: fixed discount vs no offer (₹) | -29.7 | -29.68 | Step 5 · lapsed + low app | ✓ |
-| Everyone else: free delivery vs no offer (₹) | -7.3 | -7.26 | Step 5 · lapsed + low app | ✓ |
-| Everyone else: percentage off vs no offer (₹) | -21.5 | -21.53 | Step 5 · lapsed + low app | ✓ |
-| Lapsed + low app: fixed vs no offer (₹) | -1.7 | -1.71 | Step 5 · lapsed + low app | ✓ |
-| Lapsed + low app: free delivery vs no offer (₹) | 8.3 | 8.28 | Step 5 · lapsed + low app | ✓ |
-| Lapsed + low app: percentage vs no offer (₹) | -1.4 | -1.36 | Step 5 · lapsed + low app | ✓ |
-| Lapsed + low app: free delivery extra orders | 0.28 | 0.28 | Step 5 · lapsed + low app | ✓ |
-| 95% range for the +₹8.3, low end (~₹1) | 1 | 0.77 | Step 9.12 · confidence ranges | ✓ |
-| 95% range for the +₹8.3, high end (~₹16) | 16 | 15.8 | Step 9.12 · confidence ranges | ✓ |
+| Chart: Dormant (no 2025 orders), Fixed discount vs no offer (₹) | 11.6 | 11.57 | Step 5 · where does the gain come from | ✓ |
+| Chart: Dormant (no 2025 orders), Free delivery vs no offer (₹) | 17 | 17.04 | Step 5 · where does the gain come from | ✓ |
+| Chart: Dormant (no 2025 orders), Percentage discount vs no offer (₹) | 5.1 | 5.12 | Step 5 · where does the gain come from | ✓ |
+| Chart: Lapsed, ordered in 2025, Fixed discount vs no offer (₹) | -13.6 | -13.63 | Step 5 · where does the gain come from | ✓ |
+| Chart: Lapsed, ordered in 2025, Free delivery vs no offer (₹) | -0.7 | -0.67 | Step 5 · where does the gain come from | ✓ |
+| Chart: Lapsed, ordered in 2025, Percentage discount vs no offer (₹) | -12.5 | -12.46 | Step 5 · where does the gain come from | ✓ |
+| Chart: Active, Fixed discount vs no offer (₹) | -34.8 | -34.76 | Step 5 · where does the gain come from | ✓ |
+| Chart: Active, Free delivery vs no offer (₹) | -9.4 | -9.36 | Step 5 · where does the gain come from | ✓ |
+| Chart: Active, Percentage discount vs no offer (₹) | -22 | -22.04 | Step 5 · where does the gain come from | ✓ |
+| Dormant free delivery 95% range, low end (~₹8) | 8 | 7.93 | Step 5 · where does the gain come from | ✓ |
+| Dormant free delivery 95% range, high end (~₹26) | 26 | 26.15 | Step 5 · where does the gain come from | ✓ |
 
 ## Slide 8 · Three actions
 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
-| % of customers lapsed + low app use | 32.6 | 32.57 | Step 6 · rec 1 | ✓ |
 | Promo as run, per 1,000 customers (₹) | -12,461 | -12,461 | Step 6 · rec 1 | ✓ |
-| Targeted free delivery, per 1,000 customers (~₹2,700) | 2,700 | 2,698 | Step 6 · rec 1 | ✓ |
 | Small-basket rule upper limit, % of total margin (notebook) | 9.1 | 9.11 | Step 6 · rec 1b | ✓ |
 | Late % with promise by distance (each order's actual minutes vs new promise) | 7.5 | 7.53 | Step 6 · rec 2 | ✓ |
 | % of orders that would see a longer promise (~40%) | 40.5 | 40.53 | Step 6 · rec 2 | ✓ |
+| % of customers who are dormant (no orders in the last 12 months) | 15.5 | 15.51 | Step 6 · rec 1 | ✓ |
+| Free delivery to dormant customers, per 1,000 customers (~₹2,600) | 2,600 | 2,643 | Step 6 · rec 1 | ✓ |
+| Fewer offers than offering everyone (~85%) | 85 | 84.49 | Step 8.14 · offers | ✓ |
+| % of orders that would see a shorter promise (18%) | 18 | 18.43 | Step 6 · rec 2 | ✓ |
 | Stock fix: ₹ more per order | 5.6 | 5.61 | Step 6 · rec 3 | ✓ |
 | Stock fix: % of total margin (~3%) | 3.1 | 3.13 | Step 6 · rec 3 | ✓ |
 
@@ -171,6 +178,8 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Orders dated before their store opened | 936 | 936 | Step 1 · data checks | ✓ |
 | Orders dated before the customer signed up | 4,744 | 4,744 | Step 1 · data checks | ✓ |
 | Customers with no 2025 orders | 1,241 | 1,241 | Step 1 · data checks | ✓ |
+| Late % in Q1 (14%) | 14 | 14.28 | Step 2 · orders by quarter | ✓ |
+| Late % in Q3 (20%) | 20 | 20.34 | Step 2 · orders by quarter | ✓ |
 | Duplicate order ids | 0 | 0 | Step 1 · data checks | ✓ |
 | Blank delivery times | 305 | 305 | Step 1 · data checks | ✓ |
 | Cancelled orders | 305 | 305 | Step 1 · data checks | ✓ |
@@ -189,10 +198,10 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 - The 9 stores below 90% stock accuracy: S003, S011, S012, S016, S019, S026, S027, S033, S036 (notebook Step 4, stock accuracy).
 - Busy hours where lateness jumps: 12, 13, 19, 20 and 21 (notebook Step 4, lateness by hour).
 - Fastest-growing stores: S004 and S034 (notebook Step 4, fastest-growing stores).
-- "About ₹2,700" per 1,000 customers: the notebook prints ₹2,704 (it uses the rounded +₹8.3); exact is ₹2,698.
-- "Held up when I split customers into two halves": notebook Step 9.13 picks free delivery for lapsed + low app use on one half (+₹5.2) and it stays positive on the other half (+₹11.2).
-- The promo targeting rule uses only fields the Data Dictionary marks as known at decision time (days since last order, app sessions in the last 30 days).
+- "About ₹2,600" per 1,000 customers from free delivery to dormant customers: the notebook prints ₹2,637 (it uses the rounded +₹17.0); exact is ₹2,643.
+- Holdout check (notebook Step 8.13): free delivery for dormant customers is the best choice on one random half of customers (+₹13.3) and holds on the other half (+₹20.7).
+- The promo targeting rule uses only a field the Data Dictionary marks as known at decision time (orders in the last 12 months).
 
 ## How this check was made
 
-I re-calculated each number with plain pandas directly from the case Excel file (a separate script, not the notebook), then compared it with the slide. The notebook also has its own checks: Step 7 re-calculates key numbers in plain Python, Step 8 shows 43 of 43 numbers match my first analysis, and Step 9 redoes every extra check from that analysis (19 of 19 match).
+I re-calculated each number with plain pandas directly from the case Excel file (a separate script, not the notebook), then compared it with the slide. Inside the notebook, Step 7 re-calculates the key numbers in plain Python, and Step 8 has the extra checks (correlations, 95% ranges, the holdout check).

@@ -82,7 +82,8 @@ FROM orders;
 -- Customers at a glance
 SELECT COUNT(*)                                                       AS customers,
        SUM(CASE WHEN historical_orders_12m > 0 THEN 1 ELSE 0 END)      AS customers_who_ordered_in_2025,
-       ROUND(100.0 * AVG(repeat_order_30d), 1)                         AS pct_repeat_within_30_days
+       ROUND(100.0 * AVG(repeat_order_30d), 1)                         AS pct_repeat_within_30_days,
+       ROUND(100.0 * AVG(CASE WHEN historical_orders_12m > 0 THEN repeat_order_30d END), 1) AS pct_repeat_among_those_who_ordered
 FROM customers;
 
 -- Orders by quarter
@@ -90,7 +91,8 @@ SELECT CASE WHEN strftime('%m', order_timestamp) <= '03' THEN 'Q1'
             WHEN strftime('%m', order_timestamp) <= '06' THEN 'Q2'
             WHEN strftime('%m', order_timestamp) <= '09' THEN 'Q3'
             ELSE 'Q4' END        AS quarter,
-       COUNT(*)                  AS orders
+       COUNT(*)                  AS orders,
+       ROUND(100.0 * AVG(late_delivery_flag), 1) AS pct_late
 FROM orders
 GROUP BY quarter
 ORDER BY quarter;
@@ -287,6 +289,7 @@ ORDER BY items_missing;
 
 -- Orders with missing items: how many get a refund, and how big?
 SELECT ROUND(100.0 * AVG(CASE WHEN stockout_item_count > 0 THEN 1 ELSE 0 END), 1)                 AS pct_delivered_orders_with_missing_item,
+       ROUND(100.0 * AVG(CASE WHEN stockout_item_count - substitution_count > 0 THEN 1 ELSE 0 END), 1) AS pct_with_an_item_not_replaced,
        ROUND(100.0 * AVG(CASE WHEN stockout_item_count > 0 AND refund_inr > 0 THEN 1.0
                               WHEN stockout_item_count > 0 THEN 0 END), 1)                          AS pct_of_those_refunded,
        ROUND(AVG(CASE WHEN stockout_item_count > 0 AND refund_inr > 0 THEN refund_inr END), 0)      AS avg_refund_when_given
@@ -483,6 +486,18 @@ JOIN customers c ON a.customer_id = c.customer_id
 GROUP BY customer_group, a.offer_type
 ORDER BY customer_group, a.offer_type;
 
+-- Extra margin vs no offer: customers with no 2025 orders vs lapsed customers who did order
+SELECT CASE WHEN c.historical_orders_12m = 0 THEN '1. No orders in 2025 (dormant)'
+            WHEN c.days_since_last_order > 90 THEN '2. Lapsed, but ordered in 2025'
+            ELSE '3. Active' END                     AS customer_group,
+       a.offer_type,
+       COUNT(*)                                       AS customers,
+       AVG(a.post_campaign_margin_inr)                AS margin_per_customer
+FROM campaign_assignments a
+JOIN customers c ON a.customer_id = c.customer_id
+GROUP BY customer_group, a.offer_type
+ORDER BY customer_group, a.offer_type;
+
 -- Does the campaign result change by membership, city tier or acquisition channel?
 SELECT 'Membership' AS split, c.membership_status AS grp,
        ROUND(AVG(CASE WHEN a.assignment_group = 'Treatment' THEN a.post_campaign_margin_inr END)
@@ -535,11 +550,13 @@ SELECT CASE WHEN discount_share <= 0.05 THEN '1. up to 5%'
        COUNT(*)                                          AS customers,
        ROUND(100.0 * AVG(repeat_order_30d), 1)          AS pct_repeat,
        ROUND(AVG(orders), 1)                             AS orders_per_customer,
-       ROUND(AVG(margin_per_order), 1)                   AS margin_per_order
+       ROUND(AVG(margin_per_order), 1)                   AS margin_per_order_avg_of_customers,
+       ROUND(SUM(total_margin) / SUM(orders), 1)         AS margin_per_order
 FROM (SELECT c.customer_id, c.repeat_order_30d,
              COUNT(*)                                       AS orders,
              SUM(o.discount_inr) / SUM(o.basket_value_inr)  AS discount_share,
-             AVG(o.contribution_margin_inr)                 AS margin_per_order
+             AVG(o.contribution_margin_inr)                 AS margin_per_order,
+             SUM(o.contribution_margin_inr)                 AS total_margin
       FROM orders o JOIN customers c ON o.customer_id = c.customer_id
       GROUP BY c.customer_id)
 GROUP BY discount_share_of_spend

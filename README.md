@@ -2,7 +2,7 @@
 
 My submission for the Straive campus case study #1 (Senior Business Analyst / Consultant). SwiftBasket is a fictional quick-commerce company. The COO wants to know which growth is worth paying for.
 
-I kept the method simple: load the Excel sheets into SQL, answer each question with plain SQL queries, and build two dashboards in Tableau.
+I kept the method simple: load the Excel sheets into SQL, answer each question with plain SQL queries, and check the key numbers a second way in Python. I also built two Tableau dashboards.
 
 ## What I found
 
@@ -10,16 +10,16 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 2. **Some growth isn't worth having.** The discount doesn't grow with the basket: it averages about ₹45 at every basket size, so baskets under ₹400 lose ₹10.4 each (57% of them lose money). Customers who lean on discounts (over 11% of spend) repeat more (43% vs 23%) but earn ₹15 per order vs ₹74. Our most frequent customers get the biggest discounts, so they earn the least per order (₹32 vs ₹57), though they're still worth the most in total (₹427 a year).
 3. **The delivery promise ignores distance.** 20-minute promises are late 72.5% of the time beyond 4 km. In rain at peak hours, 47.5% of orders are late.
 4. **Missing items turn into refunds.** 2 in 3 delivered orders have a missing item. On delivered orders the refund is ₹0 when nothing is missing and averages about ₹28 when something is. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
-5. **The Q1 2026 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group: the extra orders didn't cover the cost of the offers. The only offer that clearly paid was free delivery for customers who had stopped ordering (91+ days) and rarely open the app (7 or fewer sessions): +₹8.3 (95% range about +₹1 to +₹16) and +0.28 orders each.
+5. **The Q1 2026 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group: the extra orders didn't cover the cost of the offers. The one clear gain was free delivery for dormant customers (no orders in 2025): +₹17 each (95% range about +₹8 to +₹26), and it held up on a random half of customers it wasn't chosen on. For customers who did order in 2025, the discounts lost money and free delivery didn't help.
 
-Data caveats I found: 936 orders are dated before their store opened, 4,744 before the customer signed up, and 1,241 customers have no 2025 orders but a recent "last order" date. None of them change the main findings, but they're why I don't use store age or signup date and why I'd re-test the promo rule.
+Data caveats I found: 936 orders are dated before their store opened, 4,744 before the customer signed up, and 1,241 customers have no 2025 orders but a last-order date inside 2025. Those 1,241 are the dormant customers the promo works for, so I'd re-test that offer before a full rollout. I don't use store age or signup date.
 
 ## What I'd do next quarter
 
 | Action | Expected effect | Main trade-off | How to test it |
 |---|---|---|---|
-| 1. Spend discounts only where they pay: free delivery only for lapsed customers with low app use (91+ days since last order, 7 or fewer app sessions), and no discount on baskets under ₹400 | Offers to everyone lose ₹12,461 per 1,000 customers; targeted free delivery gains about ₹2,700. Small baskets stop losing ₹10.4 each (upper limit about +9% of total margin if nobody stops ordering) | Fewer offers used; some small-basket customers may order less | Re-run with a random no-offer group, judged on margin; try the ₹400 minimum in a few cities vs similar cities |
-| 2. Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.5% | About 40% of orders see a longer promise | Try it in a few stores vs similar stores |
+| 1. Spend discounts only where they pay: free delivery only for dormant customers (no orders in the last 12 months, 15.5% of customers), and no discount on baskets under ₹400 | Offers to everyone lose ₹12,461 per 1,000 customers; free delivery to dormant customers gains about ₹2,600, with 85% fewer offers. The ₹400 floor is worth up to about +9% of total margin if customers keep ordering | Fewer offers used; some small-basket orders may be lost | Re-run with a random no-offer group, judged on margin; try the ₹400 minimum in a few cities vs similar cities |
+| 2. Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.5% | About 40% of orders see a longer promise (18% a shorter one) | Randomly chosen stores vs the rest |
 | 3. Regular stock counts in the 9 stores below 90% accuracy | About ₹5.6 more per order, about +3% of total margin | Staff time; these stores are also short-staffed, so the pilot must separate the two | 3–4 stores vs similar stores for 6 weeks |
 
 ## What's in the repo
@@ -27,13 +27,11 @@ Data caveats I found: 936 orders are dated before their store opened, 4,744 befo
 | Path | What it is |
 |---|---|
 | `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
-| `sql/queries.sql` | All 65 SQL queries in one file (SQLite) |
-| `sql/cross_check.sql` | 43 simple queries that reproduce every number from my first, more advanced analysis (all match; notebook Step 8) |
-| Notebook Step 9 | Every extra check from my first analysis (store correlations, quartiles, 95% confidence ranges, holdout check, five-band promise rule and more) redone in simple code; 19 of 19 numbers match |
-| `charts/` | The 8 charts made in the notebook (used in the slides) |
+| `sql/queries.sql` | All 66 SQL queries in one file (SQLite) |
+| `charts/` | The charts made in the notebook (used in the slides) |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to the two Tableau dashboards (Business Health; Operations and Promo), with numbers to check against. The finished workbook is a packaged .twbx that contains the case data, so it's shared separately, not in this repo |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |
-| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (121 of 121 match) |
+| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (130 of 130 match) |
 
 The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
