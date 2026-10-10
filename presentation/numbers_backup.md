@@ -1,8 +1,8 @@
 # Where every number comes from
 
-Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the SQL query that produces it.
+Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the code that produces it.
 
-Result: **106 of 106 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **108 of 108 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
 
 Two definitions to know:
 - "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
@@ -125,6 +125,8 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Lapsed + low app: free delivery vs no offer (₹) | 8.3 | 8.28 | Step 5 · lapsed + low app | ✓ |
 | Lapsed + low app: percentage vs no offer (₹) | -1.4 | -1.36 | Step 5 · lapsed + low app | ✓ |
 | Lapsed + low app: free delivery extra orders | 0.28 | 0.28 | Step 5 · lapsed + low app | ✓ |
+| 95% range for the +₹8.3, low end (~₹1) | 1 | 0.77 | Step 9.12 · confidence ranges | ✓ |
+| 95% range for the +₹8.3, high end (~₹16) | 16 | 15.8 | Step 9.12 · confidence ranges | ✓ |
 
 ## Slide 8 · Three actions
 
@@ -172,8 +174,9 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 - Busy hours where lateness jumps: 12, 13, 19, 20 and 21 (notebook Step 4, lateness by hour).
 - Fastest-growing stores: S004 and S034 (notebook Step 4, fastest-growing stores).
 - "About ₹2,700" per 1,000 customers: the notebook prints ₹2,704 (it uses the rounded +₹8.3); exact is ₹2,698.
+- "Held up when I split customers into two halves": notebook Step 9.13 picks free delivery for lapsed + low app use on one half (+₹5.2) and it stays positive on the other half (+₹11.2).
 - The promo targeting rule uses only fields the Data Dictionary marks as known at decision time (days since last order, app sessions in the last 30 days).
 
 ## How this check was made
 
-I re-calculated each number with plain pandas directly from the case Excel file (a separate script, not the notebook), then compared it with the slide. The notebook also has its own check: Step 7 re-calculates key numbers in plain Python and Step 8 shows 43 of 43 numbers match my first analysis.
+I re-calculated each number with plain pandas directly from the case Excel file (a separate script, not the notebook), then compared it with the slide. The notebook also has its own checks: Step 7 re-calculates key numbers in plain Python, Step 8 shows 43 of 43 numbers match my first analysis, and Step 9 redoes every extra check from that analysis (19 of 19 match).

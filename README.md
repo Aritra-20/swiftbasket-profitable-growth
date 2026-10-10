@@ -32,7 +32,7 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 | `charts/` | The 8 charts made in the notebook (used in the slides) |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to the two Tableau dashboards (Business Health; Operations and Promo), with numbers to check against. The finished workbook is a packaged .twbx that contains the case data, so it's shared separately, not in this repo |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |
-| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (106 of 106 match) |
+| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (108 of 108 match) |
 
 The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
