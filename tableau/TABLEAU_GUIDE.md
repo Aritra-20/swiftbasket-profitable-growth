@@ -1,4 +1,6 @@
-# Tableau Public: step-by-step guide
+# Tableau: step-by-step guide
+
+The finished workbook is `SwiftBasket_Dashboard.twbx` (Tableau 2026.2, packaged with the data). This guide shows how it was built, so you can rebuild or explain any chart.
 
 You'll build **2 simple dashboards** from the case Excel file:
 
@@ -7,13 +9,13 @@ You'll build **2 simple dashboards** from the case Excel file:
 
 Time needed: about 1.5 to 2 hours the first time.
 
-You need **Tableau Public** (free desktop app): https://public.tableau.com/app/discover → *Create* → *Download Tableau Public*.
+You need **Tableau Desktop** or the free **Tableau Public** app: https://public.tableau.com/app/discover → *Create* → *Download Tableau Public*.
 
 ---
 
 ## Part A · Connect the data (10 min)
 
-1. Open Tableau Public. On the left under **Connect**, click **Microsoft Excel** and choose `SwiftBasket_2026_Case_Data.xlsx`.
+1. Open Tableau. On the left under **Connect**, click **Microsoft Excel** and choose `SwiftBasket_2026_Case_Data.xlsx`.
 2. You'll see the sheet names on the left. Drag **orders** onto the big empty canvas.
 3. Drag **stores** next to it. Tableau draws a line (a "relationship") between them. Click the line and check it says **Store Id = Store Id**. If not, choose those fields.
 4. Drag **customers** onto the canvas and connect it to **orders** on **Customer Id = Customer Id**.

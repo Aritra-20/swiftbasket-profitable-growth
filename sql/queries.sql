@@ -18,6 +18,25 @@ SELECT ROUND(SUM(gross_margin_inr + delivery_fee_inr - discount_inr - picking_co
                  - delivery_cost_inr - refund_inr - contribution_margin_inr), 2) AS difference
 FROM orders;
 
+-- Blanks, duplicates and odd values in orders
+SELECT COUNT(*) - COUNT(DISTINCT order_id)                          AS duplicate_order_ids,
+       SUM(CASE WHEN actual_delivery_minutes IS NULL THEN 1 ELSE 0 END) AS blank_delivery_time,
+       SUM(cancelled_flag)                                           AS cancelled_orders,
+       SUM(CASE WHEN rating IS NULL THEN 1 ELSE 0 END)               AS orders_not_rated,
+       SUM(CASE WHEN basket_value_inr <= 0 THEN 1 ELSE 0 END)        AS zero_or_negative_baskets
+FROM orders;
+
+-- Blanks in the stores table
+SELECT SUM(CASE WHEN competitor_intensity IS NULL THEN 1 ELSE 0 END) AS stores_without_competition_score
+FROM stores;
+
+-- Are the customer 'last 12 months' columns just the 2025 orders added up?
+SELECT SUM(CASE WHEN c.historical_orders_12m = COALESCE(o.n, 0) THEN 1 ELSE 0 END) AS customers_matching,
+       COUNT(*) AS customers
+FROM customers c
+LEFT JOIN (SELECT customer_id, COUNT(*) AS n FROM orders GROUP BY customer_id) o
+       ON c.customer_id = o.customer_id;
+
 -- Headline numbers for 2025
 SELECT COUNT(*)                                                         AS orders,
        ROUND(AVG(basket_value_inr), 0)                                  AS avg_basket_inr,
@@ -103,6 +122,69 @@ SELECT CASE WHEN app_sessions_30d <= 3  THEN '1. 0-3 sessions'
 FROM customers
 GROUP BY app_use
 ORDER BY app_use;
+
+-- Small baskets: is the discount the same whatever the basket size?
+SELECT CASE WHEN basket_value_inr < 400 THEN '1. under ₹400'
+            WHEN basket_value_inr < 500 THEN '2. ₹400-499'
+            WHEN basket_value_inr < 600 THEN '3. ₹500-599'
+            WHEN basket_value_inr < 700 THEN '4. ₹600-699'
+            ELSE '5. ₹700+' END                                      AS basket_size,
+       COUNT(*)                                                       AS orders,
+       ROUND(AVG(discount_inr), 1)                                    AS avg_discount,
+       ROUND(AVG(contribution_margin_inr), 1)                         AS margin_per_order,
+       ROUND(100.0 * AVG(CASE WHEN contribution_margin_inr < 0 THEN 1 ELSE 0 END), 1) AS pct_losing_money
+FROM orders
+GROUP BY basket_size
+ORDER BY basket_size;
+
+-- Members vs non-members: discount, delivery fee and margin per order
+SELECT c.membership_status,
+       COUNT(*)                                AS orders,
+       ROUND(AVG(o.discount_inr), 1)           AS avg_discount,
+       ROUND(AVG(o.delivery_fee_inr), 1)       AS avg_delivery_fee,
+       ROUND(AVG(o.contribution_margin_inr), 1) AS margin_per_order
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY c.membership_status;
+
+-- Does charging a delivery fee change margin?
+SELECT delivery_fee_inr, COUNT(*) AS orders, ROUND(AVG(contribution_margin_inr), 1) AS margin_per_order
+FROM orders
+GROUP BY delivery_fee_inr;
+
+-- Margin per order by acquisition channel
+SELECT c.acquisition_channel,
+       COUNT(*) AS orders,
+       ROUND(AVG(o.discount_inr), 1)            AS avg_discount,
+       ROUND(AVG(o.contribution_margin_inr), 1) AS margin_per_order
+FROM orders o
+JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY c.acquisition_channel;
+
+-- Do marketing impressions or clicks go with repeat buying?
+SELECT 'Impressions (30 days)' AS signal,
+       CASE WHEN campaign_impressions_30d <= 4 THEN '1. 0-4'
+            WHEN campaign_impressions_30d <= 9 THEN '2. 5-9' ELSE '3. 10+' END AS bucket,
+       COUNT(*) AS customers, ROUND(100.0 * AVG(repeat_order_30d), 1) AS pct_repeat
+FROM customers GROUP BY signal, bucket
+UNION ALL
+SELECT 'Clicks (30 days)', CAST(campaign_clicks_30d AS TEXT), COUNT(*), ROUND(100.0 * AVG(repeat_order_30d), 1)
+FROM customers GROUP BY campaign_clicks_30d;
+
+-- Do newer customers behave differently? (by signup half-year)
+SELECT strftime('%Y', signup_date) || CASE WHEN strftime('%m', signup_date) <= '06' THEN ' H1' ELSE ' H2' END AS signed_up,
+       COUNT(*) AS customers,
+       ROUND(100.0 * AVG(repeat_order_30d), 1) AS pct_repeat,
+       ROUND(AVG(historical_orders_12m), 2)    AS orders_in_2025
+FROM customers
+GROUP BY signed_up
+ORDER BY signed_up;
+
+-- Customers who signed up but never ordered, and customers who lost us money
+SELECT SUM(CASE WHEN historical_orders_12m = 0 THEN 1 ELSE 0 END) AS never_ordered,
+       SUM(CASE WHEN historical_orders_12m > 0 AND historical_margin_12m < 0 THEN 1 ELSE 0 END) AS lost_us_money_in_2025,
+       SUM(CASE WHEN historical_orders_12m > 0 THEN 1 ELSE 0 END) AS ordered_at_least_once
+FROM customers;
 
 -- How often is each delivery promise missed?
 SELECT promised_minutes, COUNT(*) AS orders,
@@ -200,6 +282,95 @@ UNION ALL
 SELECT 'Store opened in', strftime('%Y', s.launch_date), ROUND(AVG(o.contribution_margin_inr), 1)
 FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY strftime('%Y', s.launch_date);
 
+-- Lateness by hour of the day
+SELECT CAST(strftime('%H', order_timestamp) AS INTEGER) AS hour,
+       COUNT(*) AS orders,
+       ROUND(100.0 * AVG(late_delivery_flag), 1) AS pct_late
+FROM orders
+GROUP BY hour
+ORDER BY hour;
+
+-- Lateness by day of the week (0 = Sunday)
+SELECT strftime('%w', order_timestamp) AS weekday,
+       COUNT(*) AS orders,
+       ROUND(100.0 * AVG(late_delivery_flag), 1) AS pct_late,
+       ROUND(AVG(contribution_margin_inr), 1)    AS margin_per_order
+FROM orders
+GROUP BY weekday
+ORDER BY weekday;
+
+-- Bigger orders (more items) have more missing items
+SELECT CASE WHEN item_count <= 3 THEN '1. 1-3 items' WHEN item_count <= 6 THEN '2. 4-6 items'
+            WHEN item_count <= 9 THEN '3. 7-9 items' ELSE '4. 10+ items' END AS order_size,
+       COUNT(*) AS orders,
+       ROUND(AVG(stockout_item_count), 2)       AS missing_items_per_order,
+       ROUND(AVG(contribution_margin_inr), 1)   AS margin_per_order
+FROM orders
+GROUP BY order_size
+ORDER BY order_size;
+
+-- Orders with missing items: does replacing them with a substitute help?
+SELECT stockout_item_count - substitution_count AS items_not_replaced,
+       COUNT(*)                   AS orders,
+       ROUND(AVG(refund_inr), 1)  AS avg_refund,
+       ROUND(AVG(rating), 2)      AS avg_rating
+FROM orders
+WHERE stockout_item_count > 0
+GROUP BY items_not_replaced
+ORDER BY items_not_replaced;
+
+-- Late AND missing items: how often do customers contact support?
+SELECT CASE WHEN late_delivery_flag = 1 THEN 'Late' ELSE 'On time' END            AS delivery,
+       CASE WHEN stockout_item_count > 0 THEN 'Items missing' ELSE 'Complete' END AS basket,
+       COUNT(*) AS orders,
+       ROUND(100.0 * AVG(service_contact_flag), 1) AS pct_contacted_support,
+       ROUND(AVG(rating), 2) AS avg_rating
+FROM orders
+WHERE cancelled_flag = 0
+GROUP BY delivery, basket
+ORDER BY pct_contacted_support;
+
+-- Store format, catchment area and local competition
+SELECT 'Store format' AS split, s.store_format AS grp, COUNT(DISTINCT s.store_id) AS stores,
+       ROUND(AVG(o.contribution_margin_inr), 1) AS margin_per_order, ROUND(100.0 * AVG(o.late_delivery_flag), 1) AS pct_late
+FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY s.store_format
+UNION ALL
+SELECT 'Catchment density', s.catchment_density, COUNT(DISTINCT s.store_id),
+       ROUND(AVG(o.contribution_margin_inr), 1), ROUND(100.0 * AVG(o.late_delivery_flag), 1)
+FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY s.catchment_density
+UNION ALL
+SELECT 'Competition', COALESCE(s.competitor_intensity, 'Not assessed'), COUNT(DISTINCT s.store_id),
+       ROUND(AVG(o.contribution_margin_inr), 1), ROUND(100.0 * AVG(o.late_delivery_flag), 1)
+FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY COALESCE(s.competitor_intensity, 'Not assessed');
+
+-- Do stores with fewer riders deliver late more often?
+SELECT CASE WHEN s.average_active_riders < 25 THEN '1. under 25 riders'
+            WHEN s.average_active_riders < 40 THEN '2. 25-39 riders' ELSE '3. 40+ riders' END AS riders_per_shift,
+       COUNT(DISTINCT s.store_id) AS stores,
+       ROUND(100.0 * AVG(o.late_delivery_flag), 1) AS pct_late
+FROM orders o
+JOIN stores s ON o.store_id = s.store_id
+GROUP BY riders_per_shift
+ORDER BY riders_per_shift;
+
+-- Are the fastest-growing stores leaking money? (orders in Jul-Dec vs Jan-Jun)
+SELECT store_id,
+       SUM(CASE WHEN strftime('%m', order_timestamp) <= '06' THEN 1 ELSE 0 END) AS orders_jan_jun,
+       SUM(CASE WHEN strftime('%m', order_timestamp) >  '06' THEN 1 ELSE 0 END) AS orders_jul_dec,
+       ROUND(AVG(contribution_margin_inr), 1) AS margin_per_order
+FROM orders
+GROUP BY store_id
+ORDER BY 1.0 * orders_jul_dec / orders_jan_jun DESC
+LIMIT 6;
+
+-- When do orders get cancelled?
+SELECT weather_flag,
+       CASE WHEN peak_period_flag = 1 THEN 'Peak hours' ELSE 'Other hours' END AS time_of_day,
+       ROUND(100.0 * AVG(cancelled_flag), 2) AS pct_cancelled
+FROM orders
+GROUP BY weather_flag, time_of_day
+ORDER BY pct_cancelled DESC;
+
 -- Check: are the groups alike before the campaign?
 SELECT a.offer_type,
        COUNT(*) AS customers,
@@ -235,7 +406,7 @@ SELECT CASE WHEN c.days_since_last_order <= 90 THEN '1. Active (ordered in last 
        COUNT(*) AS customers,
        ROUND(100.0 * AVG(a.offer_redeemed_flag), 1) AS pct_redeemed,
        ROUND(AVG(a.post_campaign_orders), 2)        AS orders_per_customer,
-       ROUND(AVG(a.post_campaign_margin_inr), 1)    AS margin_per_customer
+       AVG(a.post_campaign_margin_inr)              AS margin_per_customer
 FROM campaign_assignments a
 JOIN customers c ON a.customer_id = c.customer_id
 GROUP BY customer_type, a.offer_type
@@ -248,9 +419,25 @@ SELECT CASE WHEN c.days_since_last_order > 90 AND c.app_sessions_30d <= 7
        COUNT(*) AS customers,
        ROUND(100.0 * AVG(a.offer_redeemed_flag), 1) AS pct_redeemed,
        ROUND(AVG(a.post_campaign_orders), 2)        AS orders_per_customer,
-       ROUND(AVG(a.post_campaign_margin_inr), 1)    AS margin_per_customer
+       AVG(a.post_campaign_margin_inr)              AS margin_per_customer
 FROM campaign_assignments a
 JOIN customers c ON a.customer_id = c.customer_id
 GROUP BY customer_group, a.offer_type
 ORDER BY customer_group, a.offer_type;
+
+-- Does the campaign result change by membership, city tier or acquisition channel?
+SELECT 'Membership' AS split, c.membership_status AS grp,
+       ROUND(AVG(CASE WHEN a.assignment_group = 'Treatment' THEN a.post_campaign_margin_inr END)
+           - AVG(CASE WHEN a.assignment_group = 'Control'   THEN a.post_campaign_margin_inr END), 1) AS offer_minus_no_offer
+FROM campaign_assignments a JOIN customers c ON a.customer_id = c.customer_id GROUP BY c.membership_status
+UNION ALL
+SELECT 'City tier', c.city_tier,
+       ROUND(AVG(CASE WHEN a.assignment_group = 'Treatment' THEN a.post_campaign_margin_inr END)
+           - AVG(CASE WHEN a.assignment_group = 'Control'   THEN a.post_campaign_margin_inr END), 1)
+FROM campaign_assignments a JOIN customers c ON a.customer_id = c.customer_id GROUP BY c.city_tier
+UNION ALL
+SELECT 'Channel', c.acquisition_channel,
+       ROUND(AVG(CASE WHEN a.assignment_group = 'Treatment' THEN a.post_campaign_margin_inr END)
+           - AVG(CASE WHEN a.assignment_group = 'Control'   THEN a.post_campaign_margin_inr END), 1)
+FROM campaign_assignments a JOIN customers c ON a.customer_id = c.customer_id GROUP BY c.acquisition_channel;
 
