@@ -108,7 +108,7 @@ Drag **orders (Count)** to Text. In newer versions this field is at the bottom o
    - ✅ The weakest stores (S012, S011, S027) should be coloured "Below 90%".
 
 ### Sheet "Missing items → refunds"
-1. Create a calculated field **Avg Refund (delivered orders)**: `ROUND(AVG(IF [Cancelled Flag] = 0 THEN [Refund Inr] END), 1)`. (Cancelled orders are refunded in full, so leaving them out shows the effect of missing items alone.)
+1. Create a calculated field **Avg Refund (delivered orders)**: `ROUND(AVG(IF [Cancelled Flag] = 0 THEN [Refund Inr] END), 1)`. (Cancelled orders get large refunds, about ₹365 on average, so leaving them out shows the effect of missing items alone.)
 2. **Items Missing** to Columns, **Avg Refund (delivered orders)** to Rows. Show labels.
    - ✅ ₹0 for 0 missing, about ₹27–28 for 1 or more.
 
@@ -128,7 +128,7 @@ New Dashboard → Size: Automatic → put "Late % by distance and promise" and "
 
 1. **File → Save to Tableau Public…** and sign in (free account).
 2. Give it a name like *SwiftBasket Case Study*.
-3. **Important:** everything on Tableau Public is public. The case data is synthetic, but its README says it's for the hiring exercise only. On your Tableau Public profile, open the workbook's settings and switch it to **hidden from profile**, then share only the link.
+3. **Important:** everything on Tableau Public is public. The case data is synthetic, but its README says it's for the hiring exercise only. On your Tableau Public profile, open the workbook's settings and switch it to **hidden from profile**, then share only the link. Hidden workbooks can still be opened and downloaded by anyone with the link, so also turn off "Allow access" / downloads in the workbook settings.
 4. Copy the link for your video description and README.
 
 ---

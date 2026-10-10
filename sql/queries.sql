@@ -30,6 +30,27 @@ FROM orders;
 SELECT SUM(CASE WHEN competitor_intensity IS NULL THEN 1 ELSE 0 END) AS stores_without_competition_score
 FROM stores;
 
+-- Do dates make sense? Orders before the store opened or before the customer signed up
+SELECT SUM(CASE WHEN o.order_timestamp < s.launch_date THEN 1 ELSE 0 END)  AS orders_before_store_opened,
+       SUM(CASE WHEN o.order_timestamp < c.signup_date THEN 1 ELSE 0 END)  AS orders_before_customer_signed_up
+FROM orders o
+JOIN stores s    ON o.store_id = s.store_id
+JOIN customers c ON o.customer_id = c.customer_id;
+
+-- Which stores have orders dated before they opened?
+SELECT s.store_id, s.launch_date, COUNT(*) AS orders_before_opening
+FROM orders o JOIN stores s ON o.store_id = s.store_id
+WHERE o.order_timestamp < s.launch_date
+GROUP BY s.store_id
+ORDER BY orders_before_opening DESC;
+
+-- Customers with no 2025 orders: what does their 'days since last order' say?
+SELECT COUNT(*)                      AS customers_with_no_2025_orders,
+       MIN(days_since_last_order)    AS min_days_since_last_order,
+       MAX(days_since_last_order)    AS max_days_since_last_order
+FROM customers
+WHERE historical_orders_12m = 0;
+
 -- Are the customer 'last 12 months' columns just the 2025 orders added up?
 SELECT SUM(CASE WHEN c.historical_orders_12m = COALESCE(o.n, 0) THEN 1 ELSE 0 END) AS customers_matching,
        COUNT(*) AS customers
@@ -233,7 +254,7 @@ WHERE cancelled_flag = 0
 GROUP BY delivery;
 
 -- Missing items (stock-outs): refunds and ratings (delivered orders only)
--- Cancelled orders are refunded in full, so I leave them out to see the effect of missing items alone
+-- Cancelled orders get large refunds (₹365 on average), so I leave them out to see the effect of missing items alone
 SELECT CASE WHEN stockout_item_count = 0 THEN '0 missing'
             WHEN stockout_item_count = 1 THEN '1 missing'
             WHEN stockout_item_count = 2 THEN '2 missing'
@@ -246,6 +267,14 @@ FROM orders
 WHERE cancelled_flag = 0
 GROUP BY items_missing
 ORDER BY items_missing;
+
+-- Orders with missing items: how many get a refund, and how big?
+SELECT ROUND(100.0 * AVG(CASE WHEN stockout_item_count > 0 THEN 1 ELSE 0 END), 1)                 AS pct_delivered_orders_with_missing_item,
+       ROUND(100.0 * AVG(CASE WHEN stockout_item_count > 0 AND refund_inr > 0 THEN 1.0
+                              WHEN stockout_item_count > 0 THEN 0 END), 1)                          AS pct_of_those_refunded,
+       ROUND(AVG(CASE WHEN stockout_item_count > 0 AND refund_inr > 0 THEN refund_inr END), 0)      AS avg_refund_when_given
+FROM orders
+WHERE cancelled_flag = 0;
 
 -- Stores grouped by how accurate their stock records are
 SELECT CASE WHEN s.inventory_accuracy_pct < 90 THEN '1. Below 90%'

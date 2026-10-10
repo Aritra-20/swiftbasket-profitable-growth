@@ -2,11 +2,14 @@
 
 Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the code that produces it.
 
-Result: **108 of 108 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **121 of 121 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
 
 Two definitions to know:
 - "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
 - "% late" uses delivered orders only (the case marks late as blank for cancelled orders). The refund-by-missing-items table also uses delivered orders only, so cancellation refunds don't mix in.
+- "Margin % of sales" divides by the basket value before discount (7.9%). On sales after discount it would be 8.6%.
+- "Offers to everyone lose ₹12,461 per 1,000 customers" is the test's result per customer who got an offer, times 1,000. In the Q1 test only 64.6% got an offer, so the test itself lost about ₹8,050 per 1,000 customers.
+- The new delivery promise (7.5% late) is checked order by order: actual delivery time doesn't depend on the promise (about 19 minutes for 20, 25 and 30-minute promises), so each delivered order's actual minutes are compared with the promise it would get.
 
 Things that are *not* from the case data, and are labelled where they appear:
 - Outlook Business, 13 Jan 2026: Blinkit, Zepto and others dropped "10-minute delivery" claims (slide 5, notebook Step 6).
@@ -47,6 +50,9 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Cancelled orders' share of all margin (~9%) | -9.3 | -9.25 | Step 2 · cancelled orders | ✓ |
 | Margin per delivered order (~₹49) | 48.9 | 48.87 | Step 2 · cancelled orders | ✓ |
 | Part of the ₹21 refund that is cancellations (~₹4) | 4 | 3.71 | Step 2 · cancelled orders | ✓ |
+| Customers who ordered in 2025 | 6,759 | 6,759 | Step 3 · never ordered / lost money | ✓ |
+| Repeat within 30 days (31%) | 31 | 30.66 | Step 3 · repeat rates | ✓ |
+| Orders Q4 vs Q1 (+5%) | 5 | 5.22 | Step 2 · month by month | ✓ |
 
 ## Slide 4 · Customers
 
@@ -64,6 +70,11 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Discount per order, 11+ order customers (₹) | 57 | 56.82 | Step 3 · frequent customers | ✓ |
 | Margin per order, 1-order customers (₹) | 57 | 56.64 | Step 3 · frequent customers | ✓ |
 | Margin per order, 11+ order customers (₹) | 32 | 32.1 | Step 3 · frequent customers | ✓ |
+| Repeat %, discount-heavy customers (>11% of spend) | 43 | 43.34 | Step 9.3 · discount reliance | ✓ |
+| Repeat %, light-discount customers (≤5%) | 23 | 23.12 | Step 9.3 · discount reliance | ✓ |
+| Margin per order, discount-heavy customers (₹) | 15 | 14.74 | Step 9.3 · discount reliance | ✓ |
+| Margin per order, light-discount customers (₹) | 74 | 74.08 | Step 9.3 · discount reliance | ✓ |
+| Margin per customer per year, 11+ order customers (₹) | 427 | 427.45 | Step 3 · frequent customers | ✓ |
 | Repeat rate, lowest group by membership/channel/first offer (29%) | 29 | 29.28 | Step 3 · repeat rates | ✓ |
 | Repeat rate, highest group by membership/channel/first offer (33%) | 33 | 32.8 | Step 3 · repeat rates | ✓ |
 | Repeat rate, 0-3 app sessions (10%) | 10 | 10.43 | Step 3 · app sessions | ✓ |
@@ -89,6 +100,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
 | Avg refund, nothing missing, delivered orders (₹) | 0 | 0 | Step 4 · missing items | ✓ |
+| Delivered orders with a missing item (2 in 3) | 65 | 64.61 | Step 4 · missing items | ✓ |
 | Avg refund, 1 item missing (₹) | 28 | 27.66 | Step 4 · missing items | ✓ |
 | Avg refund, 3+ items missing (₹) | 27 | 27.42 | Step 4 · missing items | ✓ |
 | Rating, nothing missing | 4.95 | 4.95 | Step 4 · missing items | ✓ |
@@ -136,7 +148,8 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Promo as run, per 1,000 customers (₹) | -12,461 | -12,461 | Step 6 · rec 1 | ✓ |
 | Targeted free delivery, per 1,000 customers (~₹2,700) | 2,700 | 2,698 | Step 6 · rec 1 | ✓ |
 | Small-basket rule upper limit, % of total margin (notebook) | 9.1 | 9.11 | Step 6 · rec 1b | ✓ |
-| Late % with promise by distance | 7.1 | 7.14 | Step 6 · rec 2 | ✓ |
+| Late % with promise by distance (each order's actual minutes vs new promise) | 7.5 | 7.53 | Step 6 · rec 2 | ✓ |
+| % of orders that would see a longer promise (~40%) | 40 | 40.53 | Step 6 · rec 2 | ✓ |
 | Stock fix: ₹ more per order | 5.6 | 5.61 | Step 6 · rec 3 | ✓ |
 | Stock fix: % of total margin (~3%) | 3.1 | 3.13 | Step 6 · rec 3 | ✓ |
 
@@ -155,6 +168,9 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Non-members' discount per order (₹51.3) | 51.3 | 51.34 | Step 3 · members | ✓ |
 | Fast-growing store S004 margin per order (₹48) | 48.4 | 48.39 | Step 4 · fastest-growing stores | ✓ |
 | Fast-growing store S034 margin per order (₹52) | 51.8 | 51.78 | Step 4 · fastest-growing stores | ✓ |
+| Orders dated before their store opened | 936 | 936 | Step 1 · data checks | ✓ |
+| Orders dated before the customer signed up | 4,744 | 4,744 | Step 1 · data checks | ✓ |
+| Customers with no 2025 orders | 1,241 | 1,241 | Step 1 · data checks | ✓ |
 | Duplicate order ids | 0 | 0 | Step 1 · data checks | ✓ |
 | Blank delivery times | 305 | 305 | Step 1 · data checks | ✓ |
 | Cancelled orders | 305 | 305 | Step 1 · data checks | ✓ |

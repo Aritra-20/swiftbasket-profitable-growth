@@ -6,33 +6,34 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 
 ## What I found
 
-1. **Discounts and refunds eat the margin.** An average order brings in about ₹167. Discounts (₹45) and refunds (₹21) take ₹66, and we keep ₹44, which is 7.9% of sales. 1 in 5 orders loses money. Cancellations are only 1% of orders, but each is refunded and loses about ₹403, so together they cost about 9% of the year's margin.
-2. **Bigger discounts don't make bigger baskets.** The basket is about ₹560 whatever the discount. No discount leaves ₹87 of margin; ₹76+ off leaves ₹5. The discount is about ₹45 whatever the basket size, so baskets under ₹400 lose ₹10.4 each (57% of them lose money). Our most frequent customers get the biggest discounts, so they earn us the least per order (₹32 vs ₹57).
+1. **Discounts and refunds eat the margin.** An average order earns about ₹167 in product margin and delivery fees. Discounts (₹45) and refunds (₹21) take ₹66, and we keep ₹44, which is 7.9% of sales. 1 in 5 orders loses money. Cancellations are only 1% of orders, but each loses about ₹403 (mostly refunds), so together they cost about 9% of the year's margin.
+2. **Some growth isn't worth having.** The discount doesn't grow with the basket: it averages about ₹45 at every basket size, so baskets under ₹400 lose ₹10.4 each (57% of them lose money). Customers who lean on discounts (over 11% of spend) repeat more (43% vs 23%) but earn ₹15 per order vs ₹74. Our most frequent customers get the biggest discounts, so they earn the least per order (₹32 vs ₹57), though they're still worth the most in total (₹427 a year).
 3. **The delivery promise ignores distance.** 20-minute promises are late 72.5% of the time beyond 4 km. In rain at peak hours, 47.5% of orders are late.
-4. **Missing items turn into refunds.** On delivered orders the refund is ₹0 when nothing is missing and about ₹28 when even one item is missing. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
-5. **The Q1 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group. The only offer that paid was free delivery for customers who had stopped ordering (91+ days) and rarely open the app (7 or fewer sessions): +₹8.3 and +0.28 orders each.
+4. **Missing items turn into refunds.** 2 in 3 delivered orders have a missing item. On delivered orders the refund is ₹0 when nothing is missing and averages about ₹28 when something is. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
+5. **The Q1 2026 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group: the extra orders didn't cover the cost of the offers. The only offer that clearly paid was free delivery for customers who had stopped ordering (91+ days) and rarely open the app (7 or fewer sessions): +₹8.3 (95% range about +₹1 to +₹16) and +0.28 orders each.
+
+Data caveats I found: 936 orders are dated before their store opened, 4,744 before the customer signed up, and 1,241 customers have no 2025 orders but a recent "last order" date. None of them change the main findings, but they're why I don't use store age or signup date and why I'd re-test the promo rule.
 
 ## What I'd do next quarter
 
-| Action | Expected effect | How to test it |
-|---|---|---|
-| Free delivery only for lapsed customers with low app use (91+ days since last order, 7 or fewer app sessions) | Per 1,000 customers, a ₹12,461 loss becomes a gain of about ₹2,700 | Repeat with a random no-offer group, judged on margin |
-| No discount on baskets under ₹400 | Small baskets stop losing ₹10.4 each; upper limit about +9% of total margin if nobody stops ordering | Try the ₹400 minimum in a few cities first |
-| Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.1% | Try it in a few stores first |
-| Regular stock counts in the 9 stores below 90% accuracy | About +3% of total margin | Start with 3–4 stores for 6 weeks |
+| Action | Expected effect | Main trade-off | How to test it |
+|---|---|---|---|
+| 1. Spend discounts only where they pay: free delivery only for lapsed customers with low app use (91+ days since last order, 7 or fewer app sessions), and no discount on baskets under ₹400 | Offers to everyone lose ₹12,461 per 1,000 customers; targeted free delivery gains about ₹2,700. Small baskets stop losing ₹10.4 each (upper limit about +9% of total margin if nobody stops ordering) | Fewer offers used; some small-basket customers may order less | Re-run with a random no-offer group, judged on margin; try the ₹400 minimum in a few cities vs similar cities |
+| 2. Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.5% | About 40% of orders see a longer promise | Try it in a few stores vs similar stores |
+| 3. Regular stock counts in the 9 stores below 90% accuracy | About ₹5.6 more per order, about +3% of total margin | Staff time; these stores are also short-staffed, so the pilot must separate the two | 3–4 stores vs similar stores for 6 weeks |
 
 ## What's in the repo
 
 | Path | What it is |
 |---|---|
 | `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
-| `sql/queries.sql` | All 59 SQL queries in one file (SQLite) |
+| `sql/queries.sql` | All 63 SQL queries in one file (SQLite) |
 | `sql/cross_check.sql` | 43 simple queries that reproduce every number from my first, more advanced analysis (all match; notebook Step 8) |
 | Notebook Step 9 | Every extra check from my first analysis (store correlations, quartiles, 95% confidence ranges, holdout check, five-band promise rule and more) redone in simple code; 19 of 19 numbers match |
 | `charts/` | The 8 charts made in the notebook (used in the slides) |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to the two Tableau dashboards (Business Health; Operations and Promo), with numbers to check against. The finished workbook is a packaged .twbx that contains the case data, so it's shared separately, not in this repo |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |
-| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (108 of 108 match) |
+| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (121 of 121 match) |
 
 The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
