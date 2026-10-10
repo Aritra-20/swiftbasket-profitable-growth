@@ -61,7 +61,11 @@ To check the output:
 - `qa/independent_check.py` reads the Excel file fresh and re-derives every number used in the slides, including the confidence intervals and the holdout check. They match.
 - The contribution-margin formula reconciles to the rupee on all 30,000 orders.
 
-## Outside sources used for context
+## Where the data comes from
+
+Every number in the analysis, slides and dashboard comes from the case workbook. The only outside facts are two industry context notes, labelled with their source wherever they appear (slides 5 and 8, notebook §2 and §6):
+
+### Outside sources
 
 - [Blinkit stops '10 minute' delivery claim; Zepto follows suit](https://www.theweek.in/news/biz-tech/2026/01/13/gig-worker-labour-rights-blinkit-stops-10-minute-delivery-claim-zepto-follows-suit.amp.html), The Week, Jan 2026
 - [Quick-commerce giants drop '10-minute delivery' promise after govt intervention](https://www.outlookbusiness.com/corporate/quick-commerce-giants-drop-10-minute-delivery-promise-after-govt-intervention), Outlook Business

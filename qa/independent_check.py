@@ -150,3 +150,7 @@ cells = [(s_, o_) for s_ in KC.seg.unique() for o_ in ["Fixed discount", "Percen
 best = max(cells, key=lambda x: cell_uplift(KC[KC.half], *x))
 put("holdout: best cell on train half", (best, round(cell_uplift(KC[KC.half], *best), 2)))
 put("holdout: same cell on test half", round(cell_uplift(KC[~KC.half], *best), 2))
+
+# ---------- Rain share by month (supports the Jun-Sep lateness explanation, from the data itself)
+rain = O.assign(m=O.order_timestamp.dt.month).groupby("m").weather_flag.apply(lambda w: (w == "Rain").mean())
+put("rain share Jun-Sep vs other months", (round(rain.loc[6:9].mean(), 3), round(rain.drop(range(6, 10)).mean(), 3)))
