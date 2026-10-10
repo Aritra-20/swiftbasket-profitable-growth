@@ -35,7 +35,7 @@ For each one: in the left **Data** pane, right-click any empty space → **Creat
 | **Distance Band** | `IF [Delivery Distance Km] <= 2 THEN "1. 0-2 km" ELSEIF [Delivery Distance Km] <= 4 THEN "2. 2-4 km" ELSE "3. over 4 km" END` |
 | **Items Missing** | `IF [Stockout Item Count] = 0 THEN "0 missing" ELSEIF [Stockout Item Count] = 1 THEN "1 missing" ELSEIF [Stockout Item Count] = 2 THEN "2 missing" ELSE "3+ missing" END` |
 | **Stock Accuracy Group** | `IF [Inventory Accuracy Pct] < 90 THEN "1. Below 90%" ELSEIF [Inventory Accuracy Pct] < 95 THEN "2. 90-95%" ELSE "3. 95% and above" END` |
-| **Customer Type** | `IF [Days Since Last Order] <= 90 THEN "Active (ordered in last 90 days)" ELSE "Lapsed (no order for 91+ days)" END` |
+| **Customer Group** | `IF [Days Since Last Order] > 90 AND [App Sessions 30D] <= 7 THEN "Lapsed + low app use" ELSE "Everyone else" END` |
 
 One more setting: in the Data pane, right-click **Promised Minutes** → **Convert to Dimension**. That way it's treated as a category (20 / 25 / 30), not a number to add up.
 
@@ -111,10 +111,10 @@ Drag **orders (Count)** to Text. In newer versions this field is at the bottom o
 
 ### Sheet "Promo test"
 1. **Offer Type** (from campaign_assignments) to Columns.
-2. **Customer Type** to Columns as well (next to Offer Type), or to Color.
+2. **Customer Group** to Columns as well (next to Offer Type), or to Color.
 3. **Post Campaign Margin Inr** to Rows → **Average**. Show labels.
-4. Read it like this: compare each offer with the **No offer** bar for the same customer type.
-   - ✅ Lapsed: No offer ≈ ₹47.3, Free delivery ≈ ₹52.0 (the only offer above its No-offer bar). Active: No offer ≈ ₹106.2, every offer lower.
+4. Read it like this: compare each offer with the **No offer** bar for the same customer group.
+   - ✅ Lapsed + low app use: No offer ≈ ₹38.3, Free delivery ≈ ₹46.6 (the only offer above its No-offer bar). Everyone else: No offer ≈ ₹98.7, every offer lower.
 
 ### Build the dashboard
 New Dashboard → Size: Automatic → put "Late % by distance and promise" and "Late % by weather" on top, "Stores" and "Missing items" in the middle, and "Promo test" at the bottom. Title: *"SwiftBasket: operations and the promo test"*. Rename the tab **Operations & Promo**.
@@ -144,4 +144,4 @@ If a number in Tableau doesn't match these, the usual cause is **Sum** instead o
 | Late %, 20-min promise over 4 km | 72.5% |
 | Late %, rain at peak hours | 47.5% |
 | Margin per order, stores below 90% stock accuracy | ₹38.7 |
-| Promo: lapsed + free delivery vs lapsed + no offer | ₹52.0 vs ₹47.3 |
+| Promo: lapsed + low app use, free delivery vs no offer | ₹46.6 vs ₹38.3 |

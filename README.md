@@ -10,13 +10,13 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 2. **Bigger discounts don't make bigger baskets.** The basket is about ₹560 whatever the discount. No discount leaves ₹87 of margin; ₹76+ off leaves ₹5. Our most frequent customers get the biggest discounts, so they earn us the least per order (₹32 vs ₹57).
 3. **The delivery promise ignores distance.** 20-minute promises are late 72.5% of the time beyond 4 km. In rain at peak hours, 47.5% of orders are late.
 4. **Missing items turn into refunds.** The average refund is ₹10 with nothing missing and ₹28 with one item missing. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
-5. **The Q1 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group. The only offer that paid was free delivery for lapsed customers (+₹4.7 each).
+5. **The Q1 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group. The only offer that paid was free delivery for customers who had stopped ordering (91+ days) and rarely open the app (7 or fewer sessions): +₹8.3 and +0.28 orders each.
 
 ## What I'd do next quarter
 
 | Action | Expected effect | How to test it |
 |---|---|---|
-| Free delivery only for lapsed customers (no order for 91+ days); no offers to active customers | Per 1,000 customers, a ₹12,461 loss becomes a gain of about ₹2,200 | Repeat with a random no-offer group, judged on margin |
+| Free delivery only for lapsed customers with low app use (91+ days since last order, 7 or fewer app sessions) | Per 1,000 customers, a ₹12,461 loss becomes a gain of about ₹2,700 | Repeat with a random no-offer group, judged on margin |
 | Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.1% | Try it in a few stores first |
 | Regular stock counts in the 9 stores below 90% accuracy | About +3% of total margin | Start with 3–4 stores for 6 weeks |
 
@@ -25,7 +25,8 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 | Path | What it is |
 |---|---|
 | `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
-| `sql/queries.sql` | All 25 SQL queries in one file (SQLite) |
+| `sql/queries.sql` | All 26 SQL queries in one file (SQLite) |
+| `sql/cross_check.sql` | 43 simple queries that reproduce every number from my first, more advanced analysis (all match; notebook Step 8) |
 | `charts/` | The 6 charts used in the slides |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to build the two Tableau dashboards, with numbers to check against |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |

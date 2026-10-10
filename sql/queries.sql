@@ -241,3 +241,16 @@ JOIN customers c ON a.customer_id = c.customer_id
 GROUP BY customer_type, a.offer_type
 ORDER BY customer_type, a.offer_type;
 
+-- Narrow it down: lapsed AND low app use, vs everyone else
+SELECT CASE WHEN c.days_since_last_order > 90 AND c.app_sessions_30d <= 7
+            THEN '2. Lapsed + low app use' ELSE '1. Everyone else' END AS customer_group,
+       a.offer_type,
+       COUNT(*) AS customers,
+       ROUND(100.0 * AVG(a.offer_redeemed_flag), 1) AS pct_redeemed,
+       ROUND(AVG(a.post_campaign_orders), 2)        AS orders_per_customer,
+       ROUND(AVG(a.post_campaign_margin_inr), 1)    AS margin_per_customer
+FROM campaign_assignments a
+JOIN customers c ON a.customer_id = c.customer_id
+GROUP BY customer_group, a.offer_type
+ORDER BY customer_group, a.offer_type;
+
