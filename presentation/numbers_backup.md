@@ -50,9 +50,9 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Cancelled orders' share of all margin (~9%) | -9.3 | -9.25 | Step 2 · cancelled orders | ✓ |
 | Margin per delivered order (~₹49) | 48.9 | 48.87 | Step 2 · cancelled orders | ✓ |
 | Part of the ₹21 refund that is cancellations (~₹4) | 4 | 3.71 | Step 2 · cancelled orders | ✓ |
-| Customers who ordered in 2025 | 6,759 | 6,759 | Step 3 · never ordered / lost money | ✓ |
-| Repeat within 30 days (31%) | 31 | 30.66 | Step 3 · repeat rates | ✓ |
-| Orders Q4 vs Q1 (+5%) | 5 | 5.22 | Step 2 · month by month | ✓ |
+| Customers who ordered in 2025 | 6,759 | 6,759 | Step 2 · customers at a glance | ✓ |
+| Repeat within 30 days (31%) | 31 | 30.66 | Step 2 · customers at a glance | ✓ |
+| Orders Q4 vs Q1 (+5%) | 5 | 5.22 | Step 2 · orders by quarter | ✓ |
 
 ## Slide 4 · Customers
 
@@ -149,7 +149,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Targeted free delivery, per 1,000 customers (~₹2,700) | 2,700 | 2,698 | Step 6 · rec 1 | ✓ |
 | Small-basket rule upper limit, % of total margin (notebook) | 9.1 | 9.11 | Step 6 · rec 1b | ✓ |
 | Late % with promise by distance (each order's actual minutes vs new promise) | 7.5 | 7.53 | Step 6 · rec 2 | ✓ |
-| % of orders that would see a longer promise (~40%) | 40 | 40.53 | Step 6 · rec 2 | ✓ |
+| % of orders that would see a longer promise (~40%) | 40.5 | 40.53 | Step 6 · rec 2 | ✓ |
 | Stock fix: ₹ more per order | 5.6 | 5.61 | Step 6 · rec 3 | ✓ |
 | Stock fix: % of total margin (~3%) | 3.1 | 3.13 | Step 6 · rec 3 | ✓ |
 

@@ -79,6 +79,22 @@ SELECT ROUND(AVG(gross_margin_inr), 0)   AS product_margin,
        ROUND(AVG(contribution_margin_inr), 0) AS margin_left
 FROM orders;
 
+-- Customers at a glance
+SELECT COUNT(*)                                                       AS customers,
+       SUM(CASE WHEN historical_orders_12m > 0 THEN 1 ELSE 0 END)      AS customers_who_ordered_in_2025,
+       ROUND(100.0 * AVG(repeat_order_30d), 1)                         AS pct_repeat_within_30_days
+FROM customers;
+
+-- Orders by quarter
+SELECT CASE WHEN strftime('%m', order_timestamp) <= '03' THEN 'Q1'
+            WHEN strftime('%m', order_timestamp) <= '06' THEN 'Q2'
+            WHEN strftime('%m', order_timestamp) <= '09' THEN 'Q3'
+            ELSE 'Q4' END        AS quarter,
+       COUNT(*)                  AS orders
+FROM orders
+GROUP BY quarter
+ORDER BY quarter;
+
 -- What do cancelled orders cost?
 SELECT CASE WHEN cancelled_flag = 1 THEN 'Cancelled' ELSE 'Delivered' END AS status,
        COUNT(*)                                 AS orders,
@@ -120,7 +136,8 @@ SELECT CASE WHEN c.historical_orders_12m = 1  THEN '1. 1 order'
             ELSE '5. 11+ orders' END             AS orders_in_2025,
        COUNT(DISTINCT c.customer_id)              AS customers,
        ROUND(AVG(o.discount_inr), 0)              AS avg_discount,
-       ROUND(AVG(o.contribution_margin_inr), 1)   AS margin_per_order
+       ROUND(AVG(o.contribution_margin_inr), 1)   AS margin_per_order,
+       ROUND(SUM(o.contribution_margin_inr) / COUNT(DISTINCT c.customer_id), 0) AS margin_per_customer_in_year
 FROM orders o
 JOIN customers c ON o.customer_id = c.customer_id
 GROUP BY orders_in_2025

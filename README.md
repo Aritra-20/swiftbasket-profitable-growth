@@ -27,7 +27,7 @@ Data caveats I found: 936 orders are dated before their store opened, 4,744 befo
 | Path | What it is |
 |---|---|
 | `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
-| `sql/queries.sql` | All 63 SQL queries in one file (SQLite) |
+| `sql/queries.sql` | All 65 SQL queries in one file (SQLite) |
 | `sql/cross_check.sql` | 43 simple queries that reproduce every number from my first, more advanced analysis (all match; notebook Step 8) |
 | Notebook Step 9 | Every extra check from my first analysis (store correlations, quartiles, 95% confidence ranges, holdout check, five-band promise rule and more) redone in simple code; 19 of 19 numbers match |
 | `charts/` | The 8 charts made in the notebook (used in the slides) |
