@@ -72,7 +72,7 @@ SELECT 100.0*AVG(late_delivery_flag) FROM orders WHERE weather_flag='Rain' AND p
 -- Late %, normal weather off-peak (first analysis: 6.9)
 SELECT 100.0*AVG(late_delivery_flag) FROM orders WHERE weather_flag='Normal' AND peak_period_flag=0;
 
--- Avg refund, no item missing (₹) (first analysis: 10.28)
+-- Avg refund, no item missing, all orders incl. cancelled (₹) (first analysis: 10.28)
 SELECT AVG(refund_inr) FROM orders WHERE stockout_item_count=0;
 
 -- Avg refund, 1 item missing (₹) (first analysis: 27.66)

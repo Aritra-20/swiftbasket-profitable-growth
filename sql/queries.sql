@@ -58,6 +58,16 @@ SELECT ROUND(AVG(gross_margin_inr), 0)   AS product_margin,
        ROUND(AVG(contribution_margin_inr), 0) AS margin_left
 FROM orders;
 
+-- What do cancelled orders cost?
+SELECT CASE WHEN cancelled_flag = 1 THEN 'Cancelled' ELSE 'Delivered' END AS status,
+       COUNT(*)                                 AS orders,
+       ROUND(AVG(refund_inr), 1)                AS avg_refund,
+       ROUND(AVG(contribution_margin_inr), 1)   AS margin_per_order,
+       ROUND(SUM(contribution_margin_inr), 0)   AS total_margin,
+       ROUND(100.0 * SUM(contribution_margin_inr) / (SELECT SUM(contribution_margin_inr) FROM orders), 1) AS pct_of_all_margin
+FROM orders
+GROUP BY status;
+
 -- Month by month
 SELECT strftime('%m', order_timestamp)          AS month,
        COUNT(*)                                 AS orders,
@@ -222,7 +232,8 @@ FROM orders
 WHERE cancelled_flag = 0
 GROUP BY delivery;
 
--- Missing items (stock-outs): refunds and ratings
+-- Missing items (stock-outs): refunds and ratings (delivered orders only)
+-- Cancelled orders are refunded in full, so I leave them out to see the effect of missing items alone
 SELECT CASE WHEN stockout_item_count = 0 THEN '0 missing'
             WHEN stockout_item_count = 1 THEN '1 missing'
             WHEN stockout_item_count = 2 THEN '2 missing'
@@ -232,6 +243,7 @@ SELECT CASE WHEN stockout_item_count = 0 THEN '0 missing'
        ROUND(AVG(rating), 2)                    AS avg_rating,
        ROUND(AVG(contribution_margin_inr), 1)   AS margin_per_order
 FROM orders
+WHERE cancelled_flag = 0
 GROUP BY items_missing
 ORDER BY items_missing;
 

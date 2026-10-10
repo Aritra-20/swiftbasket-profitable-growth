@@ -1,8 +1,12 @@
 # Where every number comes from
 
-Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the Excel file, no SQL), and the notebook section where the SQL query that produces it lives.
+Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the SQL query that produces it.
 
-Result: **101 of 101 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **106 of 106 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+
+Two definitions to know:
+- "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
+- "% late" uses delivered orders only (the case marks late as blank for cancelled orders). The refund-by-missing-items table also uses delivered orders only, so cancellation refunds don't mix in.
 
 Things that are *not* from the case data, and are labelled where they appear:
 - Outlook Business, 13 Jan 2026: Blinkit, Zepto and others dropped "10-minute delivery" claims (slide 5, notebook Step 6).
@@ -38,6 +42,11 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Picking cost per order (₹) | 21 | 20.55 | Step 2 · where the money goes | ✓ |
 | Delivery cost per order (₹) | 36 | 36.32 | Step 2 · where the money goes | ✓ |
 | Refund per order (₹) | 21 | 21.33 | Step 2 · where the money goes | ✓ |
+| Cancelled orders, % of orders (~1%) | 1 | 1.02 | Step 2 · cancelled orders | ✓ |
+| Margin lost per cancelled order (₹) | -403 | -403.01 | Step 2 · cancelled orders | ✓ |
+| Cancelled orders' share of all margin (~9%) | -9.3 | -9.25 | Step 2 · cancelled orders | ✓ |
+| Margin per delivered order (~₹49) | 48.9 | 48.87 | Step 2 · cancelled orders | ✓ |
+| Part of the ₹21 refund that is cancellations (~₹4) | 4 | 3.71 | Step 2 · cancelled orders | ✓ |
 
 ## Slide 4 · Customers
 
@@ -79,7 +88,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
-| Avg refund, nothing missing (₹) | 10 | 10.28 | Step 4 · missing items | ✓ |
+| Avg refund, nothing missing, delivered orders (₹) | 0 | 0 | Step 4 · missing items | ✓ |
 | Avg refund, 1 item missing (₹) | 28 | 27.66 | Step 4 · missing items | ✓ |
 | Avg refund, 3+ items missing (₹) | 27 | 27.42 | Step 4 · missing items | ✓ |
 | Rating, nothing missing | 4.95 | 4.95 | Step 4 · missing items | ✓ |
@@ -163,7 +172,8 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 - Busy hours where lateness jumps: 12, 13, 19, 20 and 21 (notebook Step 4, lateness by hour).
 - Fastest-growing stores: S004 and S034 (notebook Step 4, fastest-growing stores).
 - "About ₹2,700" per 1,000 customers: the notebook prints ₹2,704 (it uses the rounded +₹8.3); exact is ₹2,698.
+- The promo targeting rule uses only fields the Data Dictionary marks as known at decision time (days since last order, app sessions in the last 30 days).
 
 ## How this check was made
 
-I re-calculated each number with plain pandas directly from the Excel file (a separate script, not the notebook), then compared it with the slide. The notebook also has its own check: Step 7 re-calculates key numbers in plain Python and Step 8 shows 43 of 43 numbers match my first analysis.
+I re-calculated each number with plain pandas directly from the case Excel file (a separate script, not the notebook), then compared it with the slide. The notebook also has its own check: Step 7 re-calculates key numbers in plain Python and Step 8 shows 43 of 43 numbers match my first analysis.
