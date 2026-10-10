@@ -1,6 +1,4 @@
-duckdb>=1.0
-pandas>=2.0
-numpy
-matplotlib
+pandas
 openpyxl
+matplotlib
 jupyter

@@ -2,73 +2,51 @@
 
 My submission for the Straive campus case study #1 (Senior Business Analyst / Consultant). SwiftBasket is a fictional quick-commerce company. The COO wants to know which growth is worth paying for.
 
-**Short answer:** SwiftBasket doesn't have a growth problem. It has a leak problem, and the leaks can be fixed.
+I kept the method simple: load the Excel sheets into SQL, answer each question with plain SQL queries, and build two dashboards in Tableau Public.
 
 ## What I found
 
-- **Unit economics.** An average order earns about ₹167 in product margin and fees. Discounts (₹45) and refunds (₹21) take ₹66 of it. We keep ₹44, which is 7.9% of GMV, and one order in five loses money.
-- **Discount-led customers.** Customers who rely on discounts repeat more (43% vs 23%), but earn ₹15 per order against ₹74 for light-discount customers. Bigger first-order offers and marketing clicks show no link to repeat buying. App habit does.
-- **The busiest customers.** The COO suspected they might be the least profitable. She's half right: per order, the busiest fifth earns the least (₹36 vs ₹57 for one-order customers), because they get the deepest discounts (9.3% of basket vs 5.9%). In total they still bring the most margin (₹370 each), so the fix is to stop discounting them, not to lose them.
-- **Delivery promise.** The 20/25/30-minute promise is given in the same mix at every distance. A 20-minute promise beyond 4 km is late 72% of the time. In rain at peak hours, 47% of orders are late.
-- **Stock accuracy.** Wrong stock records lead to stock-outs, stock-outs to refunds, and refunds to lost margin. Store margin per order correlates 0.77 with inventory accuracy.
-- **The Q1 promo (randomized).** It lost ₹12.5 of margin per customer against control. The customers who redeemed most were the ones it hurt most. Only free delivery for lapsed, low-engagement customers paid back: +₹8.3 per customer, 95% CI +₹1 to +₹16, and the result held on a holdout half.
+1. **Discounts and refunds eat the margin.** An average order brings in about ₹167. Discounts (₹45) and refunds (₹21) take ₹66, and we keep ₹44, which is 7.9% of sales. 1 in 5 orders loses money.
+2. **Bigger discounts don't make bigger baskets.** The basket is about ₹560 whatever the discount. No discount leaves ₹87 of margin; ₹76+ off leaves ₹5. Our most frequent customers get the biggest discounts, so they earn us the least per order (₹32 vs ₹57).
+3. **The delivery promise ignores distance.** 20-minute promises are late 72.5% of the time beyond 4 km. In rain at peak hours, 47.5% of orders are late.
+4. **Missing items turn into refunds.** The average refund is ₹10 with nothing missing and ₹28 with one item missing. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
+5. **The Q1 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group. The only offer that paid was free delivery for lapsed customers (+₹4.7 each).
 
 ## What I'd do next quarter
 
 | Action | Expected effect | How to test it |
 |---|---|---|
-| Free delivery only for customers lapsed 90+ days with ≤7 app sessions; cap discounts near 10% of basket | Per 10k customers, −₹1.25 lakh becomes +₹0.27 lakh, with 67% fewer offers sent | Rerun with a 20% holdout, judged on margin, not redemption |
-| Distance-aware promise: 20 min within 1 km, 25 up to 3 km, 30 beyond | Late rate 17.3% → ~11.8% | Switchback test by store and hour |
-| Fix inventory accuracy in the bottom quarter of stores (≤90%) | ≈ +4% of total contribution margin | 4 pilot stores vs 4 matched controls, 6 weeks |
+| Free delivery only for lapsed customers (no order for 91+ days); no offers to active customers | Per 1,000 customers, a ₹12,461 loss becomes a gain of about ₹2,200 | Repeat with a random no-offer group, judged on margin |
+| Promise 25 minutes within 2 km and 30 minutes beyond | Late orders from 17.3% to about 7.1% | Try it in a few stores first |
+| Regular stock counts in the 9 stores below 90% accuracy | About +3% of total margin | Start with 3–4 stores for 6 weeks |
 
 ## What's in the repo
 
 | Path | What it is |
 |---|---|
-| `notebooks/swiftbasket_analysis.ipynb` | The full analysis, run end to end with outputs |
-| `sql/analysis_queries.sql` | Every SQL query from the notebook (DuckDB dialect) |
-| `charts/` | The charts used in the slides |
-| `dashboard/` | Source and aggregate data behind the business-health dashboard |
-| `exports/` | Aggregate tables, in case you want to rebuild the dashboard in Tableau or Power BI |
-| `presentation/video_script.md` | The 5-minute video script, with timings and a recording checklist |
-| `qa/independent_check.py` | Re-derives every number used in the slides straight from the Excel file, in plain pandas with no SQL |
+| `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
+| `sql/queries.sql` | All 25 SQL queries in one file (SQLite) |
+| `charts/` | The 6 charts used in the slides |
+| `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to build the two Tableau dashboards, with numbers to check against |
+| `presentation/video_script.md` | The video script, recording checklist and AI-use note |
 
-The raw case workbook is **not** in this repo. The case README says it's for the hiring exercise only.
+The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
-## Running it
+## How to run it on Kaggle
 
-**Locally**
+1. Create a private Kaggle dataset and upload `SwiftBasket_2026_Case_Data.xlsx`.
+2. Create a new notebook → File → Import Notebook → paste the link to `notebooks/swiftbasket_analysis.ipynb` from this repo.
+3. On the right, click **Add Input** and add your dataset.
+4. Click **Run All**. The notebook finds the Excel file by itself.
 
-```bash
-pip install -r requirements.txt
-# put SwiftBasket_2026_Case_Data.xlsx in data/
-jupyter notebook notebooks/swiftbasket_analysis.ipynb
-```
-
-**On Kaggle**
-
-1. Create a private Kaggle dataset and upload `SwiftBasket_2026_Case_Data.xlsx` to it.
-2. New Notebook → File → Import Notebook → paste this repo's notebook URL.
-3. Add your dataset as input. The notebook finds the file under `/kaggle/input/` on its own.
-4. Run all. DuckDB installs with `!pip install duckdb` if it's missing.
-
-## How I used AI
-
-I used Claude (an AI assistant) to help with the analysis code (Python and SQL), the charts and the slide drafts. I reviewed each step and I'm responsible for every number and recommendation.
-
-To check the output:
-- Section 7 of the notebook re-computes the headline figures in plain pandas, separately from the SQL. They match.
-- `qa/independent_check.py` reads the Excel file fresh and re-derives every number used in the slides, including the confidence intervals and the holdout check. They match.
-- The contribution-margin formula reconciles to the rupee on all 30,000 orders.
+To run it on your own laptop instead: put the Excel file in a `data/` folder next to `notebooks/`, run `pip install -r requirements.txt`, and open the notebook.
 
 ## Where the data comes from
 
-Every number in the analysis, slides and dashboard comes from the case workbook. The only outside facts are two industry context notes, labelled with their source wherever they appear (slides 5 and 8, notebook §2 and §6):
+Every number comes from the case workbook. There are two outside facts, and each one names its source where it appears:
+- Outlook Business, 13 Jan 2026: [Quick-commerce giants drop '10-minute delivery' promise after govt intervention](https://www.outlookbusiness.com/corporate/quick-commerce-giants-drop-10-minute-delivery-promise-after-govt-intervention). Used on slide 5 and in the notebook.
+- Datum Intelligence, Jun 2026: [Blinkit turned profit. Zepto filed to IPO. Instamart cut losses.](https://daily.datumintell.com/daily-content/issues/2026-06-11-quick-commerce-zepto-blinkit-instamart.html). Used in the notebook only.
 
-### Outside sources
+## How I used AI
 
-- [Blinkit stops '10 minute' delivery claim; Zepto follows suit](https://www.theweek.in/news/biz-tech/2026/01/13/gig-worker-labour-rights-blinkit-stops-10-minute-delivery-claim-zepto-follows-suit.amp.html), The Week, Jan 2026
-- [Quick-commerce giants drop '10-minute delivery' promise after govt intervention](https://www.outlookbusiness.com/corporate/quick-commerce-giants-drop-10-minute-delivery-promise-after-govt-intervention), Outlook Business
-- [Blinkit turned profit. Zepto filed to IPO. Instamart cut losses.](https://daily.datumintell.com/daily-content/issues/2026-06-11-quick-commerce-zepto-blinkit-instamart.html), Datum Intelligence, Jun 2026
-
-All company, customer and store data in the case is synthetic.
+I used Claude (an AI assistant) to help write the code and draft the text. I reviewed each step and I'm responsible for every number. To check the work, the last section of the notebook re-calculates the key numbers in plain Python, without SQL, and they match.
