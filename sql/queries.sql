@@ -453,3 +453,133 @@ SELECT 'Channel', c.acquisition_channel,
            - AVG(CASE WHEN a.assignment_group = 'Control'   THEN a.post_campaign_margin_inr END), 1)
 FROM campaign_assignments a JOIN customers c ON a.customer_id = c.customer_id GROUP BY c.acquisition_channel;
 
+-- Orders that point to a customer or store that doesn't exist
+SELECT (SELECT COUNT(*) FROM orders WHERE customer_id NOT IN (SELECT customer_id FROM customers)) AS orders_with_unknown_customer,
+       (SELECT COUNT(*) FROM orders WHERE store_id NOT IN (SELECT store_id FROM stores))          AS orders_with_unknown_store,
+       (SELECT COUNT(DISTINCT customer_id) FROM orders)                                         AS customers_who_ordered;
+
+-- Discounts, refunds and support contacts
+SELECT ROUND(100.0 * SUM(discount_inr) / SUM(basket_value_inr), 1)                     AS discounts_pct_of_sales,
+       ROUND(100.0 * SUM(refund_inr) / SUM(basket_value_inr), 1)                       AS refunds_pct_of_sales,
+       ROUND(100.0 * AVG(CASE WHEN refund_inr > 0 THEN 1 ELSE 0 END), 1)              AS pct_orders_with_a_refund,
+       ROUND(100.0 * AVG(CASE WHEN stockout_item_count > 0 THEN 1 ELSE 0 END), 1)     AS pct_orders_with_a_stockout,
+       ROUND(100.0 * AVG(service_contact_flag), 1)                                     AS pct_orders_contacting_support,
+       ROUND(SUM(discount_inr), 0)                                                      AS total_discounts,
+       ROUND(SUM(contribution_margin_inr), 0)                                           AS total_margin
+FROM orders;
+
+-- Loss-making orders: how many had a refund?
+SELECT ROUND(100.0 * AVG(CASE WHEN refund_inr > 0 THEN 1 ELSE 0 END), 1) AS pct_loss_orders_with_refund
+FROM orders
+WHERE contribution_margin_inr < 0;
+
+-- Month by month: lateness and discount share
+SELECT strftime('%m', order_timestamp)                              AS month,
+       ROUND(100.0 * AVG(late_delivery_flag), 1)                     AS pct_late,
+       ROUND(100.0 * SUM(discount_inr) / SUM(basket_value_inr), 1)   AS discount_pct_of_sales
+FROM orders
+GROUP BY month
+ORDER BY month;
+
+-- Customers grouped by how much of their spend was discounted
+SELECT CASE WHEN discount_share <= 0.05 THEN '1. up to 5%'
+            WHEN discount_share <= 0.08 THEN '2. 5-8%'
+            WHEN discount_share <= 0.11 THEN '3. 8-11%'
+            ELSE '4. over 11%' END                      AS discount_share_of_spend,
+       COUNT(*)                                          AS customers,
+       ROUND(100.0 * AVG(repeat_order_30d), 1)          AS pct_repeat,
+       ROUND(AVG(orders), 1)                             AS orders_per_customer,
+       ROUND(AVG(margin_per_order), 1)                   AS margin_per_order
+FROM (SELECT c.customer_id, c.repeat_order_30d,
+             COUNT(*)                                       AS orders,
+             SUM(o.discount_inr) / SUM(o.basket_value_inr)  AS discount_share,
+             AVG(o.contribution_margin_inr)                 AS margin_per_order
+      FROM orders o JOIN customers c ON o.customer_id = c.customer_id
+      GROUP BY c.customer_id)
+GROUP BY discount_share_of_spend
+ORDER BY discount_share_of_spend;
+
+-- Customers grouped by how many categories they buy per order
+SELECT CASE WHEN avg_categories <= 3 THEN '1. up to 3'
+            WHEN avg_categories <= 5 THEN '2. 3-5'
+            ELSE '3. more than 5' END             AS categories_per_order,
+       COUNT(*)                                    AS customers,
+       ROUND(100.0 * AVG(repeat_order_30d), 1)    AS pct_repeat
+FROM (SELECT c.customer_id, c.repeat_order_30d, AVG(o.unique_category_count) AS avg_categories
+      FROM orders o JOIN customers c ON o.customer_id = c.customer_id
+      GROUP BY c.customer_id)
+GROUP BY categories_per_order
+ORDER BY categories_per_order;
+
+-- Members vs non-members: discount as a share of spend
+SELECT CASE WHEN c.membership_status = 'Non-member' THEN 'Non-member' ELSE 'Member' END AS membership,
+       ROUND(100.0 * SUM(o.discount_inr) / SUM(o.basket_value_inr), 1)                  AS discount_pct_of_spend
+FROM orders o JOIN customers c ON o.customer_id = c.customer_id
+GROUP BY membership;
+
+-- Late % and margin per order by weather and time of day
+SELECT weather_flag,
+       CASE WHEN peak_period_flag = 1 THEN 'Peak' ELSE 'Off-peak' END AS time_of_day,
+       COUNT(*) AS orders,
+       ROUND(100.0 * AVG(late_delivery_flag), 1)  AS pct_late,
+       ROUND(AVG(contribution_margin_inr), 1)     AS margin_per_order
+FROM orders
+GROUP BY weather_flag, time_of_day
+ORDER BY weather_flag, time_of_day;
+
+-- Four equal groups of orders, by the store's stock accuracy
+SELECT quartile,
+       MIN(inventory_accuracy_pct)              AS lowest_accuracy,
+       MAX(inventory_accuracy_pct)              AS highest_accuracy,
+       COUNT(*)                                 AS orders,
+       ROUND(AVG(stockout_item_count), 2)       AS missing_items_per_order,
+       ROUND(AVG(refund_inr), 1)                AS refund_per_order,
+       ROUND(AVG(contribution_margin_inr), 1)   AS margin_per_order,
+       ROUND(AVG(rating), 2)                    AS avg_rating
+FROM (SELECT o.*, s.inventory_accuracy_pct,
+             NTILE(4) OVER (ORDER BY s.inventory_accuracy_pct) AS quartile   -- NTILE(4) = cut into 4 equal groups
+      FROM orders o JOIN stores s ON o.store_id = s.store_id)
+GROUP BY quartile
+ORDER BY quartile;
+
+-- Late vs on-time, inside each distance band (delivered orders)
+SELECT CASE WHEN delivery_distance_km <= 2 THEN '1. up to 2 km'
+            WHEN delivery_distance_km <= 4 THEN '2. 2-4 km'
+            ELSE '3. over 4 km' END                   AS distance,
+       CASE WHEN late_delivery_flag = 1 THEN 'Late' ELSE 'On time' END AS delivery,
+       COUNT(*)                                       AS orders,
+       ROUND(AVG(contribution_margin_inr), 1)         AS margin_per_order,
+       ROUND(AVG(rating), 2)                          AS avg_rating,
+       ROUND(100.0 * AVG(service_contact_flag), 1)    AS pct_contacted_support
+FROM orders
+WHERE cancelled_flag = 0
+GROUP BY distance, delivery
+ORDER BY distance, delivery;
+
+-- Margin and delivery cost by distance
+SELECT CASE WHEN delivery_distance_km <= 1 THEN '1. up to 1 km'
+            WHEN delivery_distance_km <= 2 THEN '2. 1-2 km'
+            WHEN delivery_distance_km <= 3 THEN '3. 2-3 km'
+            WHEN delivery_distance_km <= 4 THEN '4. 3-4 km'
+            ELSE '5. over 4 km' END                AS distance,
+       COUNT(*)                                    AS orders,
+       ROUND(AVG(delivery_cost_inr), 1)            AS delivery_cost,
+       ROUND(AVG(contribution_margin_inr), 1)      AS margin_per_order,
+       ROUND(100.0 * AVG(late_delivery_flag), 1)   AS pct_late
+FROM orders
+GROUP BY distance
+ORDER BY distance;
+
+-- Late % by five distance bands and promise (delivered orders)
+SELECT CASE WHEN delivery_distance_km <= 1 THEN '0-1'
+            WHEN delivery_distance_km <= 2 THEN '1-2'
+            WHEN delivery_distance_km <= 3 THEN '2-3'
+            WHEN delivery_distance_km <= 4 THEN '3-4'
+            ELSE '4+' END                       AS band,
+       promised_minutes,
+       COUNT(*)                                 AS orders,
+       AVG(late_delivery_flag)                  AS late_rate
+FROM orders
+WHERE cancelled_flag = 0
+GROUP BY band, promised_minutes;
+
