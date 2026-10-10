@@ -1,6 +1,6 @@
 # Tableau: step-by-step guide
 
-The finished workbook is `SwiftBasket_Dashboard.twbx` (Tableau 2026.2, packaged with the data). This guide shows how it was built, so you can rebuild or explain any chart.
+The finished workbook is `SwiftBasket_Dashboard.twbx` (Tableau 2026.2, packaged with the data). This guide shows how to build each chart, so you can rebuild or explain any of them. (In the finished file both dashboards use a fixed 1400 × 900 layout with every chart placed by hand.)
 
 You'll build **2 simple dashboards** from the case Excel file:
 
@@ -108,8 +108,9 @@ Drag **orders (Count)** to Text. In newer versions this field is at the bottom o
    - ✅ The weakest stores (S012, S011, S027) should be coloured "Below 90%".
 
 ### Sheet "Missing items → refunds"
-1. **Items Missing** to Columns, **Refund Inr** to Rows → Average. Show labels.
-   - ✅ About ₹10 for 0 missing, ₹27–28 for 1 or more.
+1. Create a calculated field **Avg Refund (delivered orders)**: `ROUND(AVG(IF [Cancelled Flag] = 0 THEN [Refund Inr] END), 1)`. (Cancelled orders are refunded in full, so leaving them out shows the effect of missing items alone.)
+2. **Items Missing** to Columns, **Avg Refund (delivered orders)** to Rows. Show labels.
+   - ✅ ₹0 for 0 missing, about ₹27–28 for 1 or more.
 
 ### Sheet "Promo test"
 1. **Offer Type** (from campaign_assignments) to Columns.
@@ -147,3 +148,4 @@ If a number in Tableau doesn't match these, the usual cause is **Sum** instead o
 | Late %, rain at peak hours | 47.5% |
 | Margin per order, stores below 90% stock accuracy | ₹38.7 |
 | Promo: lapsed + low app use, free delivery vs no offer | ₹46.6 vs ₹38.3 |
+| Refund, delivered orders with nothing missing | ₹0 |
