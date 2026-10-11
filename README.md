@@ -7,7 +7,7 @@ I kept the method simple: load the Excel sheets into SQL, answer each question w
 ## What I found
 
 1. **Discounts and refunds eat the margin.** An average order earns about ₹167 in product margin and delivery fees. Discounts (₹45) and refunds (₹21) take ₹66, and we keep ₹44, which is 7.9% of sales. 1 in 5 orders loses money. Cancellations are only 1% of orders, but each loses about ₹403 (mostly refunds), so together they cost about 9% of the year's margin.
-2. **Some growth isn't worth having.** The discount doesn't grow with the basket: it averages about ₹45 at every basket size, so baskets under ₹400 lose ₹10.4 each (57% of them lose money). Customers who lean on discounts (over 11% of spend) repeat more (43% vs 23%) but earn ₹15 per order vs ₹74. Our most frequent customers get the biggest discounts, so they earn the least per order (₹32 vs ₹57), though they're still worth the most in total (₹427 a year).
+2. **Some growth isn't worth having.** The discount doesn't grow with the basket: it averages about ₹45 at every basket size, so baskets under ₹400 lose ₹10.4 each (57% of them lose money). Customers who lean on discounts (over 11% of spend) order the most (6.1 vs 2.7 orders) but earn ₹21 per order vs ₹70. Our most frequent customers get the biggest discounts, so they earn the least per order (₹32 vs ₹57), though they're still worth the most in total (₹427 a year).
 3. **The delivery promise ignores distance.** 20-minute promises are late 72.5% of the time beyond 4 km. In rain at peak hours, 47.5% of orders are late.
 4. **Missing items turn into refunds.** 2 in 3 delivered orders have a missing item. On delivered orders the refund is ₹0 when nothing is missing and averages about ₹28 when something is. The 9 stores with stock records below 90% accurate earn ₹38.7 per order, against ₹49.3 for the best stores.
 5. **The Q1 2026 promo lost money.** Customers who got an offer gave ₹12.5 less margin each than the no-offer group: the extra orders didn't cover the cost of the offers. The one clear gain was free delivery for dormant customers (no orders in 2025): +₹17 each (95% range about +₹8 to +₹26), and it held up on a random half of customers it wasn't chosen on. For customers who did order in 2025, the discounts lost money and free delivery didn't help.
@@ -27,11 +27,11 @@ Data caveats I found: 936 orders are dated before their store opened, 4,744 befo
 | Path | What it is |
 |---|---|
 | `notebooks/swiftbasket_analysis.ipynb` | The whole analysis, step by step: question → SQL → result → what I see |
-| `sql/queries.sql` | All 66 SQL queries in one file (SQLite) |
+| `sql/queries.sql` | All 67 SQL queries in one file (SQLite) |
 | `charts/` | The charts made in the notebook (used in the slides) |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to the two Tableau dashboards (Business Health; Operations and Promo), with numbers to check against. The finished workbook is a packaged .twbx that contains the case data, so it's shared separately, not in this repo |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |
-| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (130 of 130 match) |
+| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (135 of 135 match) |
 
 The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
@@ -48,7 +48,7 @@ To run it on your own laptop instead: put the Excel file in a `data/` folder nex
 
 Every number comes from the case workbook. There are two outside facts, and each one names its source where it appears:
 - Outlook Business, 13 Jan 2026: [Quick-commerce giants drop '10-minute delivery' promise after govt intervention](https://www.outlookbusiness.com/corporate/quick-commerce-giants-drop-10-minute-delivery-promise-after-govt-intervention). Used on slide 5 and in the notebook.
-- Datum Intelligence, Jun 2026: [Blinkit turned profit. Zepto filed to IPO. Instamart cut losses.](https://daily.datumintell.com/daily-content/issues/2026-06-11-quick-commerce-zepto-blinkit-instamart.html). Used in the notebook only.
+- Datum Intelligence, Jun 2026: [Blinkit turned profit. Zepto filed to IPO. Instamart cut losses.](https://daily.datumintell.com/daily-content/issues/2026-06-11-quick-commerce-zepto-blinkit-instamart.html). Used on slide 3 and in the notebook.
 
 ## How I used AI
 

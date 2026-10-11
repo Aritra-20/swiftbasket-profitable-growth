@@ -2,9 +2,9 @@
 
 Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the code that produces it.
 
-Result: **130 of 130 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **135 of 135 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
 
-Two definitions to know:
+Definitions to know:
 - "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
 - "% late" uses delivered orders only (the case marks late as blank for cancelled orders). The refund-by-missing-items table also uses delivered orders only, so cancellation refunds don't mix in.
 - "Margin % of sales" divides by the basket value before discount (7.9%). On sales after discount it would be 8.6%.
@@ -13,7 +13,7 @@ Two definitions to know:
 
 Things that are *not* from the case data, and are labelled where they appear:
 - Outlook Business, 13 Jan 2026: Blinkit, Zepto and others dropped "10-minute delivery" claims (slide 5, notebook Step 6).
-- Datum Intelligence, Jun 2026: Blinkit's contribution margin rose from 3.9% to 5.4% of net order value (slide 3 footer, notebook Step 6).
+- Datum Intelligence, Jun 2026: Blinkit's contribution margin rose from 3.9% to 5.4% of net order value (slide 3 footer, notebook Step 6). On the same basis SwiftBasket is at 8.6%.
 
 Estimates (not measured facts) are the three action effects on slide 8. They're simple arithmetic on the 2025 data, shown in notebook Step 6, and the pilots decide the real number.
 
@@ -54,6 +54,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Customers who ordered in 2025 | 6,759 | 6,759 | Step 2 · customers at a glance | ✓ |
 | Repeat within 30 days (31%) | 31 | 30.66 | Step 2 · customers at a glance | ✓ |
 | Orders Q4 vs Q1 (+5%) | 5 | 5.22 | Step 2 · orders by quarter | ✓ |
+| Margin % of sales after discount (8.6%, Blinkit basis) | 8.6 | 8.6 | Step 2 · headline numbers | ✓ |
 
 ## Slide 4 · Customers
 
@@ -159,6 +160,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | % of orders that would see a shorter promise (18%) | 18 | 18.43 | Step 6 · rec 2 | ✓ |
 | Stock fix: ₹ more per order | 5.6 | 5.61 | Step 6 · rec 3 | ✓ |
 | Stock fix: % of total margin (~3%) | 3.1 | 3.13 | Step 6 · rec 3 | ✓ |
+| Flat 30-minute promise for all: % late (5.6%) | 5.6 | 5.64 | Step 6 · recommendation 2 | ✓ |
 
 ## Slide 10 · Appendix
 
@@ -185,8 +187,11 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Cancelled orders | 305 | 305 | Step 1 · data checks | ✓ |
 | Blank delivery time AND cancelled | 305 | 305 | Step 1 · data checks | ✓ |
 | % of orders unrated | 45 | 45.23 | Step 1 · data checks | ✓ |
+| Weakest city Tier2 D: margin per order (₹42) | 42 | 42.39 | Step 4 · which cities are weakest | ✓ |
+| Weakest city Tier2 D: % late (19%) | 19 | 19.34 | Step 4 · which cities are weakest | ✓ |
+| Tier2 D is lowest margin per order | 1 | 1 | Step 4 · which cities are weakest | ✓ |
 
-## Slide Notebook text only
+## Slide Notebook only (not on a slide)
 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
@@ -194,7 +199,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 
 ## Other details on the slides
 
-- Weakest 3 stores by margin per order: S012, S011, S027 (notebook Step 4, "The six weakest stores"; also the sorted Stores sheet in Tableau).
+- Weakest 3 stores by margin per order: S012, S011, S027 (notebook Step 4, "The six weakest stores").
 - The 9 stores below 90% stock accuracy: S003, S011, S012, S016, S019, S026, S027, S033, S036 (notebook Step 4, stock accuracy).
 - Busy hours where lateness jumps: 12, 13, 19, 20 and 21 (notebook Step 4, lateness by hour).
 - Fastest-growing stores: S004 and S034 (notebook Step 4, fastest-growing stores).

@@ -63,6 +63,7 @@ SELECT COUNT(*)                                                         AS order
        ROUND(AVG(basket_value_inr), 0)                                  AS avg_basket_inr,
        ROUND(AVG(contribution_margin_inr), 1)                           AS margin_per_order_inr,
        ROUND(100.0 * SUM(contribution_margin_inr) / SUM(basket_value_inr), 1) AS margin_pct_of_sales,
+       ROUND(100.0 * SUM(contribution_margin_inr) / SUM(basket_value_inr - discount_inr), 1) AS margin_pct_after_discount,
        ROUND(100.0 * AVG(CASE WHEN contribution_margin_inr < 0 THEN 1 ELSE 0 END), 1) AS pct_orders_losing_money,
        ROUND(100.0 * AVG(late_delivery_flag), 1)                        AS pct_late,
        ROUND(100.0 * AVG(cancelled_flag), 1)                            AS pct_cancelled,
@@ -342,6 +343,15 @@ FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY s.delivery_partn
 UNION ALL
 SELECT 'Store opened in', strftime('%Y', s.launch_date), ROUND(AVG(o.contribution_margin_inr), 1)
 FROM orders o JOIN stores s ON o.store_id = s.store_id GROUP BY strftime('%Y', s.launch_date);
+
+-- Which cities are weakest?
+SELECT s.city,
+       COUNT(*) AS orders,
+       ROUND(AVG(o.contribution_margin_inr), 1) AS margin_per_order,
+       ROUND(100.0 * AVG(CASE WHEN o.cancelled_flag = 0 THEN o.late_delivery_flag END), 1) AS pct_late_delivered
+FROM orders o JOIN stores s ON o.store_id = s.store_id
+GROUP BY s.city
+ORDER BY margin_per_order;
 
 -- Lateness by hour of the day
 SELECT CAST(strftime('%H', order_timestamp) AS INTEGER) AS hour,
