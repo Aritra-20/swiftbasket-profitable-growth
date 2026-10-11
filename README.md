@@ -31,7 +31,7 @@ Data caveats I found: 936 orders are dated before their store opened, 4,744 befo
 | `charts/` | The charts made in the notebook (used in the slides) |
 | `tableau/TABLEAU_GUIDE.md` | Click-by-click guide to the two Tableau dashboards (Business Health; Operations and Promo), with numbers to check against. The finished workbook is a packaged .twbx that contains the case data, so it's shared separately, not in this repo |
 | `presentation/video_script.md` | The video script, recording checklist and AI-use note |
-| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (135 of 135 match) |
+| `presentation/numbers_backup.md` | Every number on the slides, where it comes from in the notebook, and an independent re-check (143 of 143 match) |
 
 The case Excel file is **not** in this repo. The case README says it's for the hiring exercise only.
 
@@ -52,4 +52,4 @@ Every number comes from the case workbook. There are two outside facts, and each
 
 ## How I used AI
 
-Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (135 of 135 match, see `presentation/numbers_backup.md`). Step 7 of the notebook also re-calculates the key numbers in plain Python, without SQL.
+Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (143 of 143 match, see `presentation/numbers_backup.md`). Step 7 of the notebook also re-calculates the key numbers in plain Python, without SQL.

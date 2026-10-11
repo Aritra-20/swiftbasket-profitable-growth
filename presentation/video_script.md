@@ -1,13 +1,13 @@
-# Video script (about 4:20)
+# Video script (about 4:22)
 
 Read it slowly and naturally. "..." means take a breath. The same text is in each slide's speaker notes.
 
-About 605 words: about 4:20 at 140 words a minute, or 4:38 at a slower 130, so there's slack under the 5-minute limit. The appendix slide (10) is for questions only; don't read it in the video.
+About 610 words: about 4:22 at 140 words a minute, or 4:42 at a slower 130, so there's slack under the 5-minute limit. The appendix slide (10) is for questions only; don't read it in the video.
 
 | Time | Slide | What to say |
 |---|---|---|
 | 0:00 | 1. Cover | Hi, I'm Aritra Pal from Great Lakes, Chennai, and I picked the SwiftBasket case. The COO's question was simple: we're growing, but which growth is worth having? Here's what I found. |
-| 0:13 | 2. Three findings | Three things. One... discounts and refunds take sixty-six rupees out of every order, and we keep only forty-four. Two... the Q1 promo lost money: the extra orders didn't cover the cost of the offers. Three... we promise twenty-minute delivery to customers who live too far away, and some stores keep poor stock records. Each one has a fix. |
+| 0:13 | 2. Lean in / pull back | Ms. Nair had two hunches. Our busiest customers may be the least profitable... half right: they earn the least per order, but they're still worth the most in total. Our fastest-growing stores may be leaking money... no: they earn more than average. The leak is in stores with poor stock records. So here's where to lean in, and where to pull back. |
 | 0:38 | 3. Business health | First, health. Orders are nearly flat, about two and a half thousand a month. An average order earns about a hundred and sixty-seven rupees in product margin and fees. Discounts take forty-five, refunds take twenty-one, and after picking and delivery we keep forty-four. That's under 8% of sales, and one order in five loses money. Cancellations are only one percent of orders, but by the workbook's formula they take about nine percent of our margin. So leadership should watch margin per order, not order count. |
 | 1:12 | 4. Customers | Next, customers. The discount doesn't grow with the basket: it averages forty-five rupees at every size, so orders under four hundred rupees lose about ten rupees each. Customers who lean on discounts order more often, but earn us about twenty rupees an order against seventy. And our busiest customers get the biggest discounts, so they earn the least per order... though they're still worth the most in total. |
 | 1:42 | 5. Delivery | Now delivery. Twenty, twenty-five and thirty-minute promises go to customers at the same average distance, and actual delivery takes about nineteen minutes either way. So a twenty-minute promise beyond 4 km is late 72% of the time. In rain at peak hours, almost half of all orders are late, and late orders get lower ratings. This is a real-world issue too: Outlook Business reported in January that Blinkit, Zepto and others agreed to drop their 10-minute claims after the Labour Minister raised rider safety. |
@@ -27,4 +27,4 @@ About 605 words: about 4:20 at 140 words a minute, or 4:38 at a slower 130, so t
 
 ## AI-use note (one line, as the brief asks; paste in the email or video description)
 
-> AI use: Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (135 of 135 match).
+> AI use: Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (143 of 143 match).

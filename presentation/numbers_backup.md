@@ -2,7 +2,7 @@
 
 Use this if an interviewer asks "where did that number come from?". For each number on the slides it shows the value on the slide, the same number re-calculated a second, independent way (plain pandas straight from the case Excel file, no SQL), and the notebook section with the code that produces it.
 
-Result: **135 of 135 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
+Result: **143 of 143 numbers match** (small differences are only rounding, e.g. 44.27 is shown as ₹44.3).
 
 Definitions to know:
 - "Margin per order" and "% orders losing money" use all 30,000 orders, including the 305 cancelled ones (they're real costs: each is refunded).
@@ -17,7 +17,7 @@ Things that are *not* from the case data, and are labelled where they appear:
 
 Estimates (not measured facts) are the three action effects on slide 8. They're simple arithmetic on the 2025 data, shown in notebook Step 6, and the pilots decide the real number.
 
-## Slide 2 · Three findings
+## Slide 2 · Lean in / pull back
 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
@@ -26,8 +26,14 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Stores | 36 | 36 | Step 1 · row counts | ✓ |
 | First order | Jan 2025 | Jan 2025 | Step 1 · time period | ✓ |
 | Last order | Dec 2025 | Dec 2025 | Step 1 · time period | ✓ |
-| Discounts + refunds per order (₹66) | 66 | 66.11 | Step 2 · where the money goes | ✓ |
-| % late, all 20-minute promises (40%) | 40 | 40.41 | Step 4 · promise | ✓ |
+| Fastest-growing store #1 is S004 or S034 | 1 | 1 | Step 4 · fastest-growing stores | ✓ |
+| Fastest-growing stores: lower margin per order (₹48) | 48 | 48.39 | Step 4 · fastest-growing stores | ✓ |
+| Fastest-growing stores: higher margin per order (₹52) | 52 | 51.78 | Step 4 · fastest-growing stores | ✓ |
+| Average margin per order (₹44) | 44 | 44.27 | Step 2 · headline numbers | ✓ |
+| Margin per order, baskets ₹700+ (₹94) | 94 | 94.29 | Step 3 · small baskets | ✓ |
+| Margin per order, stores 95%+ accuracy (₹49) | 49 | 49.29 | Step 4 · stock accuracy | ✓ |
+| Margin per order, stores below 90% accuracy (₹39) | 39 | 38.66 | Step 4 · stock accuracy | ✓ |
+| Under-₹400 baskets, margin per order (−₹10) | -10 | -10.41 | Step 3 · small baskets | ✓ |
 
 ## Slide 3 · Business health
 
@@ -46,6 +52,7 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Picking cost per order (₹) | 21 | 20.55 | Step 2 · where the money goes | ✓ |
 | Delivery cost per order (₹) | 36 | 36.32 | Step 2 · where the money goes | ✓ |
 | Refund per order (₹) | 21 | 21.33 | Step 2 · where the money goes | ✓ |
+| Discounts + refunds per order (₹66, chart title) | 66 | 66.11 | Step 2 · where the money goes | ✓ |
 | Cancelled orders, % of orders (~1%) | 1 | 1.02 | Step 2 · cancelled orders | ✓ |
 | Margin lost per cancelled order (₹) | -403 | -403.01 | Step 2 · cancelled orders | ✓ |
 | Cancelled orders' share of all margin (~9%) | -9.3 | -9.25 | Step 2 · cancelled orders | ✓ |
@@ -67,9 +74,6 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Margin per order, basket 700+ (₹) | 94.3 | 94.29 | Step 3 · small baskets | ✓ |
 | Smallest band discount per basket band (min, ~₹45) | 45 | 44.61 | Step 3 · small baskets | ✓ |
 | Largest band discount per basket band (max, ~₹45) | 45 | 44.94 | Step 3 · small baskets | ✓ |
-| % of under-₹400 orders losing money | 57 | 57.16 | Step 3 · small baskets | ✓ |
-| Discount per order, 1-order customers (₹) | 33 | 32.53 | Step 3 · frequent customers | ✓ |
-| Discount per order, 11+ order customers (₹) | 57 | 56.82 | Step 3 · frequent customers | ✓ |
 | Margin per order, 1-order customers (₹) | 57 | 56.64 | Step 3 · frequent customers | ✓ |
 | Margin per order, 11+ order customers (₹) | 32 | 32.1 | Step 3 · frequent customers | ✓ |
 | Orders per customer, discount-heavy (>11% of spend) | 6.1 | 6.09 | Step 8.3 · discount reliance | ✓ |
@@ -133,7 +137,6 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 | Margin per customer, offer (₹) | 66.4 | 66.35 | Step 5 · treatment vs control | ✓ |
 | Margin per customer, no offer (₹) | 78.8 | 78.82 | Step 5 · treatment vs control | ✓ |
 | Promo effect per customer (₹) | -12.5 | -12.46 | Step 6 · rec 1 | ✓ |
-| % redeemed among active customers who got an offer (~37%) | 37 | 36.79 | Step 5 · active vs lapsed | ✓ |
 | Chart: Dormant (no 2025 orders), Fixed discount vs no offer (₹) | 11.6 | 11.57 | Step 5 · where does the gain come from | ✓ |
 | Chart: Dormant (no 2025 orders), Free delivery vs no offer (₹) | 17 | 17.04 | Step 5 · where does the gain come from | ✓ |
 | Chart: Dormant (no 2025 orders), Percentage discount vs no offer (₹) | 5.1 | 5.12 | Step 5 · where does the gain come from | ✓ |
@@ -195,6 +198,11 @@ Estimates (not measured facts) are the three action effects on slide 8. They're 
 
 | What the slide says | On slide | Re-checked | Notebook section | |
 |---|---|---|---|---|
+| % of under-₹400 orders losing money | 57 | 57.16 | Step 3 · small baskets | ✓ |
+| Discount per order, 1-order customers (₹) | 33 | 32.53 | Step 3 · frequent customers | ✓ |
+| Discount per order, 11+ order customers (₹) | 57 | 56.82 | Step 3 · frequent customers | ✓ |
+| % late, all 20-minute promises (40%) | 40 | 40.41 | Step 4 · promise | ✓ |
+| % redeemed among active customers who got an offer (~37%) | 37 | 36.79 | Step 5 · active vs lapsed | ✓ |
 | % late for all 20-minute promises (40%) | 40.4 | 40.41 | Step 4 · promise | ✓ |
 
 ## Other details on the slides
