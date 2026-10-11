@@ -14,7 +14,7 @@ About 605 words: about 4:20 at 140 words a minute, or 4:38 at a slower 130, so t
 | 2:18 | 6. Stores | Second ops problem: stock-outs. Two in three delivered orders hit one. With no stock-out there's no refund at all; with one, the refund averages about twenty-eight rupees, and ratings drop. Nine stores have stock records less than 90% accurate, and they earn about eleven rupees less per order than the best stores. Delivery model makes no difference, so the fix is inside the store. |
 | 2:45 | 7. Promo test | Now the promo, which was a random test. Customers who got an offer ordered a bit more, but gave twelve and a half rupees less margin each: the extra orders didn't cover the cost. Active customers redeemed the most, yet no offer paid for them. The only clear gain was free delivery for dormant customers, with no orders last year: about seventeen rupees each. Their records have a data quirk, so I'd re-test it first. |
 | 3:17 | 8. Three actions | So, three actions for next quarter. One... send free delivery only to dormant customers, with no orders in the last year, and stop discounting baskets under four hundred rupees. Two... promise twenty-five minutes within 2 km and thirty beyond. Late deliveries drop from 17% to about seven and a half, though 40% of orders see a longer promise, so I'd pilot it first. Three... fix stock records in the nine weakest stores, worth about 3% more margin. |
-| 3:50 | 9. How I worked | On method... I loaded the case data into SQL, checked it, and answered each question with simple queries. All numbers come from the case data, except the two labelled outside facts. I used Claude, an AI assistant, to help write the code and draft the slides. The analysis and recommendations are mine, and I checked the AI's output by recalculating every number separately. Thank you. |
+| 3:50 | 9. How I worked | On method... I checked the data before trusting it and found a few date quirks, so I only used fields known at decision time. I read the promo as a random test and judged it on margin, not orders. Claude, an AI assistant, helped write the code and draft the slide wording, and I re-checked every number on these slides from the raw data. Thank you. |
 
 ## Recording checklist
 
@@ -27,4 +27,4 @@ About 605 words: about 4:20 at 140 words a minute, or 4:38 at a slower 130, so t
 
 ## AI-use note (one line, as the brief asks; paste in the email or video description)
 
-> I used Claude (an AI assistant) to help write the SQL/Python code and draft the slides; the analysis and recommendations are mine, and I checked the AI's output by recalculating every number on the slides a second, separate way.
+> AI use: Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (135 of 135 match).

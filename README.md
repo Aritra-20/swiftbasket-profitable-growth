@@ -52,4 +52,4 @@ Every number comes from the case workbook. There are two outside facts, and each
 
 ## How I used AI
 
-I used Claude (an AI assistant) to help write the code and draft the text. I reviewed each step and I'm responsible for every number. To check the work, the last section of the notebook re-calculates the key numbers in plain Python, without SQL, and they match.
+Claude helped write the SQL/Python code and draft slide wording. I checked it by re-calculating every number on the slides separately in pandas from the raw Excel (135 of 135 match, see `presentation/numbers_backup.md`). Step 7 of the notebook also re-calculates the key numbers in plain Python, without SQL.
